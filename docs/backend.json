@@ -1,0 +1,254 @@
+{
+  "entities": {
+    "About": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "About",
+      "type": "object",
+      "description": "Represents the 'About' section content on the portfolio website.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the About entity."
+        },
+        "bio": {
+          "type": "string",
+          "description": "Biographical text content for the 'About' section."
+        },
+        "photoUrl": {
+          "type": "string",
+          "description": "URL of the photo displayed in the 'About' section.",
+          "format": "uri"
+        },
+        "funFacts": {
+          "type": "array",
+          "description": "An array of fun facts about the individual.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "bio",
+        "photoUrl",
+        "funFacts"
+      ]
+    },
+    "Project": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Project",
+      "type": "object",
+      "description": "Represents a portfolio project.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Project entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the project."
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the project."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the project's image.",
+          "format": "uri"
+        },
+        "techStack": {
+          "type": "array",
+          "description": "Array of technologies used in the project.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "liveLink": {
+          "type": "string",
+          "description": "Link to the live project (if applicable).",
+          "format": "uri"
+        },
+        "githubLink": {
+          "type": "string",
+          "description": "Link to the project's GitHub repository.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "imageUrl",
+        "techStack"
+      ]
+    },
+    "ResumeEntry": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ResumeEntry",
+      "type": "object",
+      "description": "Represents a single entry in the resume (experience or education).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ResumeEntry entity."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of resume entry (e.g., 'experience' or 'education')."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the resume entry (e.g., job title or degree)."
+        },
+        "company": {
+          "type": "string",
+          "description": "Company or institution associated with the entry (if applicable)."
+        },
+        "dates": {
+          "type": "string",
+          "description": "Start and end dates for the entry."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the responsibilities or achievements."
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "title",
+        "dates",
+        "description"
+      ]
+    },
+    "ContactMessage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ContactMessage",
+      "type": "object",
+      "description": "Represents a message submitted through the contact form.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ContactMessage entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the person submitting the message."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the person submitting the message.",
+          "format": "email"
+        },
+        "message": {
+          "type": "string",
+          "description": "The message content."
+        },
+        "sentAt": {
+          "type": "string",
+          "description": "Timestamp when the message was sent.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "email",
+        "message",
+        "sentAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/about/{aboutId}",
+        "definition": {
+          "entityName": "About",
+          "schema": {
+            "$ref": "#/backend/entities/About"
+          },
+          "description": "Stores the 'About' section content. Each document represents a single About section. Admin users have full access.",
+          "params": [
+            {
+              "name": "aboutId",
+              "description": "Unique identifier for the About section.  There will likely only be a single document with ID 'main'."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/projects/{projectId}",
+        "definition": {
+          "entityName": "Project",
+          "schema": {
+            "$ref": "#/backend/entities/Project"
+          },
+          "description": "Stores project details for the portfolio. Admin users have full access.",
+          "params": [
+            {
+              "name": "projectId",
+              "description": "Unique identifier for each project."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/resume_entries/{resumeEntryId}",
+        "definition": {
+          "entityName": "ResumeEntry",
+          "schema": {
+            "$ref": "#/backend/entities/ResumeEntry"
+          },
+          "description": "Stores resume entries (experience and education). Admin users have full access.",
+          "params": [
+            {
+              "name": "resumeEntryId",
+              "description": "Unique identifier for each resume entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/contact_messages/{contactMessageId}",
+        "definition": {
+          "entityName": "ContactMessage",
+          "schema": {
+            "$ref": "#/backend/entities/ContactMessage"
+          },
+          "description": "Stores contact form submissions.  Admin users have read access.",
+          "params": [
+            {
+              "name": "contactMessageId",
+              "description": "Unique identifier for each contact message."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "roles_admin",
+          "schema": {
+            "$ref": "#/backend/entities/user"
+          },
+          "description": "Collection to store admin user IDs. Presence of a document indicates admin role.  Authorization relies on existence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase UID of the admin user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to manage data for a personal portfolio website, focusing on clarity, security, and scalability. It leverages structural segregation by separating different data types into distinct collections with specific access control needs.  Authorization independence is achieved by denormalizing access control information where necessary, avoiding the need for `get()` calls in security rules. The use of dedicated collections and path-based ownership simplifies security rules and enables secure list operations (QAPs).  The admin role is managed using a dedicated collection, enabling easy role verification. Overall, this structure allows for simple, robust, and easily debuggable security rules while maintaining data integrity."
+  }
+}
