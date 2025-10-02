@@ -47,6 +47,7 @@ export type PortfolioData = {
   experiences: Experience[];
   educations: Education[];
   cvUrl: string;
+  contactMessages: ContactMessage[];
 };
 
 export type ContactMessage = {

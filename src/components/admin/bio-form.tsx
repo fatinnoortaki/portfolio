@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { portfolioData } from '@/lib/data';
 import { generateBioContent } from '@/ai/flows/generate-bio-content';
+import { saveBio } from '@/lib/actions';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +15,7 @@ import { Input } from '../ui/input';
 
 export function BioForm() {
   const [isPending, startTransition] = useTransition();
+  const [isSaving, startSavingTransition] = useTransition();
   const { toast } = useToast();
 
   const [bio, setBio] = useState(portfolioData.bio);
@@ -35,6 +37,18 @@ export function BioForm() {
       }
     });
   };
+
+  const handleSaveChanges = () => {
+    startSavingTransition(async () => {
+      const result = await saveBio(bio, funFacts);
+      if (result.success) {
+        toast({ title: 'Success', description: result.message });
+      } else {
+        toast({ variant: 'destructive', title: 'Error', description: result.message });
+      }
+    });
+  };
+
 
   return (
     <Card>
@@ -89,7 +103,9 @@ export function BioForm() {
         </div>
       </CardContent>
       <CardFooter>
-        <Button>Save Changes</Button>
+        <Button onClick={handleSaveChanges} disabled={isSaving}>
+          {isSaving ? 'Saving...' : 'Save Changes'}
+        </Button>
       </CardFooter>
     </Card>
   );

@@ -3,6 +3,7 @@ import { useState, useTransition } from 'react';
 import { portfolioData } from '@/lib/data';
 import type { Experience, Education } from '@/lib/definitions';
 import { generateResumeSummary } from '@/ai/flows/generate-resume-summary';
+import { saveResume } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,7 @@ import { Sparkles, Briefcase, GraduationCap, PlusCircle, Trash } from 'lucide-re
 
 export function ResumeAdmin() {
   const [isPending, startTransition] = useTransition();
+  const [isSaving, startSavingTransition] = useTransition();
   const { toast } = useToast();
 
   const [experiences, setExperiences] = useState<Experience[]>(portfolioData.experiences);
@@ -37,6 +39,25 @@ export function ResumeAdmin() {
     });
   };
 
+  const handleSaveAll = () => {
+    startSavingTransition(async () => {
+      const result = await saveResume(experiences, educations);
+      if (result.success) {
+        toast({ title: 'Success', description: 'Resume sections saved successfully!' });
+      } else {
+        toast({ variant: 'destructive', title: 'Error', description: result.message });
+      }
+    });
+  };
+
+  const handleExperienceChange = (id: string, field: keyof Experience, value: string) => {
+    setExperiences(experiences.map(exp => exp.id === id ? { ...exp, [field]: value } : exp));
+  };
+  
+  const handleEducationChange = (id: string, field: keyof Education, value: string) => {
+    setEducations(educations.map(edu => edu.id === id ? { ...edu, [field]: value } : edu));
+  };
+
   const addExperience = () => setExperiences([...experiences, { id: `exp-${Date.now()}`, role: '', company: '', period: '', description: '' }]);
   const addEducation = () => setEducations([...educations, { id: `edu-${Date.now()}`, degree: '', institution: '', period: '' }]);
   
@@ -56,13 +77,13 @@ export function ResumeAdmin() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {experiences.map((exp, index) => (
+          {experiences.map((exp) => (
             <Card key={exp.id} className="bg-muted/50 p-4">
               <div className="grid grid-cols-2 gap-4">
-                <Input placeholder="Role" defaultValue={exp.role} />
-                <Input placeholder="Company" defaultValue={exp.company} />
-                <Input placeholder="Period (e.g., 2020-Present)" defaultValue={exp.period} className="col-span-2" />
-                <Textarea placeholder="Description" defaultValue={exp.description} className="col-span-2" />
+                <Input placeholder="Role" value={exp.role} onChange={e => handleExperienceChange(exp.id, 'role', e.target.value)} />
+                <Input placeholder="Company" value={exp.company} onChange={e => handleExperienceChange(exp.id, 'company', e.target.value)} />
+                <Input placeholder="Period (e.g., 2020-Present)" value={exp.period} onChange={e => handleExperienceChange(exp.id, 'period', e.target.value)} className="col-span-2" />
+                <Textarea placeholder="Description" value={exp.description} onChange={e => handleExperienceChange(exp.id, 'description', e.target.value)} className="col-span-2" />
               </div>
               <div className="flex justify-end mt-2">
                 <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground" onClick={() => removeExperience(exp.id)}><Trash className="h-4 w-4" /></Button>
@@ -86,9 +107,9 @@ export function ResumeAdmin() {
           {educations.map((edu) => (
             <Card key={edu.id} className="bg-muted/50 p-4">
                <div className="grid grid-cols-2 gap-4">
-                <Input placeholder="Degree" defaultValue={edu.degree} />
-                <Input placeholder="Institution" defaultValue={edu.institution} />
-                <Input placeholder="Period (e.g., 2014-2016)" defaultValue={edu.period} className="col-span-2" />
+                <Input placeholder="Degree" value={edu.degree} onChange={e => handleEducationChange(edu.id, 'degree', e.target.value)} />
+                <Input placeholder="Institution" value={edu.institution} onChange={e => handleEducationChange(edu.id, 'institution', e.target.value)} />
+                <Input placeholder="Period (e.g., 2014-2016)" value={edu.period} onChange={e => handleEducationChange(edu.id, 'period', e.target.value)} className="col-span-2" />
               </div>
                <div className="flex justify-end mt-2">
                 <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground" onClick={() => removeEducation(edu.id)}><Trash className="h-4 w-4" /></Button>
@@ -112,10 +133,13 @@ export function ResumeAdmin() {
             </Button>
           </div>
         </CardContent>
-        <CardFooter>
-            <Button>Save All Changes</Button>
-        </CardFooter>
       </Card>
+
+       <div className="flex justify-end">
+        <Button onClick={handleSaveAll} disabled={isSaving}>
+            {isSaving ? 'Saving...' : 'Save All Resume Changes'}
+        </Button>
+      </div>
     </div>
   );
 }
