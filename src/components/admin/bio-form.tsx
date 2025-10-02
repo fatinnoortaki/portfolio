@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import Image from 'next/image';
-import { portfolioData } from '@/lib/data';
 import { generateBioContent } from '@/ai/flows/generate-bio-content';
 import { saveBioClient } from '@/lib/client-actions';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,20 +14,40 @@ import { useToast } from '@/hooks/use-toast';
 import { Sparkles, Upload } from 'lucide-react';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
+import { Skeleton } from '../ui/skeleton';
+import type { FunFact } from '@/lib/definitions';
+
+type AboutData = {
+  bio: string;
+  photoUrl: string;
+  funFacts: FunFact[];
+};
 
 export function BioForm() {
-  const [isPending, startTransition] = useTransition();
+  const [isGenerating, startGeneratingTransition] = useTransition();
   const [isSaving, startSavingTransition] = useTransition();
   const { toast } = useToast();
   const firestore = useFirestore();
 
-  const [bio, setBio] = useState(portfolioData.bio);
+  const aboutRef = useMemoFirebase(() => firestore ? doc(firestore, 'about', 'main') : null, [firestore]);
+  const { data: aboutData, isLoading: isLoadingData } = useDoc<AboutData>(aboutRef);
+
+  const [bio, setBio] = useState('');
   const [userInput, setUserInput] = useState('');
-  const [funFacts, setFunFacts] = useState(portfolioData.funFacts);
-  const [profilePhotoUrl, setProfilePhotoUrl] = useState(portfolioData.profilePhotoUrl);
+  const [funFacts, setFunFacts] = useState<FunFact[]>([]);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState('');
+  const [localPhoto, setLocalPhoto] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (aboutData) {
+      setBio(aboutData.bio || '');
+      setFunFacts(aboutData.funFacts || []);
+      setProfilePhotoUrl(aboutData.photoUrl || '');
+    }
+  }, [aboutData]);
 
   const handleGenerateBio = () => {
-    startTransition(async () => {
+    startGeneratingTransition(async () => {
       if (!userInput.trim()) {
         toast({ variant: 'destructive', title: 'Error', description: 'Please provide some details about yourself.' });
         return;
@@ -45,13 +65,13 @@ export function BioForm() {
   const handleSaveChanges = () => {
     startSavingTransition(async () => {
       try {
-        if (profilePhotoUrl.startsWith('data:')) {
-            toast({
-              variant: 'destructive',
-              title: 'Upload Not Supported',
-              description: 'Image upload is not supported. Please paste a URL instead.',
-            });
-            return;
+        if (localPhoto) {
+          toast({
+            variant: 'destructive',
+            title: 'Upload Not Supported',
+            description: 'Image upload is not supported in this version. Please paste a URL instead.',
+          });
+          return;
         }
 
         await saveBioClient(firestore, bio, funFacts, profilePhotoUrl);
@@ -70,11 +90,47 @@ export function BioForm() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
+        setLocalPhoto(reader.result as string);
         setProfilePhotoUrl(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
   };
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProfilePhotoUrl(e.target.value);
+    setLocalPhoto(null);
+  };
+  
+  if (isLoadingData) {
+    return (
+       <Card>
+          <CardHeader>
+             <Skeleton className="h-8 w-40" />
+             <Skeleton className="h-4 w-64" />
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-20" />
+              <div className="flex items-center gap-4">
+                <Skeleton className="h-20 w-20 rounded-full" />
+                <div className="flex-grow space-y-2">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-32" />
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+               <Skeleton className="h-4 w-16" />
+               <Skeleton className="h-24 w-full" />
+            </div>
+          </CardContent>
+          <CardFooter>
+             <Skeleton className="h-10 w-32" />
+          </CardFooter>
+       </Card>
+    )
+  }
 
 
   return (
@@ -91,14 +147,14 @@ export function BioForm() {
               <div className="flex-grow space-y-2">
                 <Input 
                     type="url"
-                    placeholder="Or paste image URL"
-                    value={profilePhotoUrl.startsWith('data:') ? '' : profilePhotoUrl}
-                    onChange={(e) => setProfilePhotoUrl(e.target.value)}
+                    placeholder="Paste image URL"
+                    value={localPhoto ? '' : profilePhotoUrl}
+                    onChange={handleUrlChange}
                 />
                 <Input id="photoUpload" type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
                 <Button asChild variant="outline">
                   <Label htmlFor="photoUpload" className="cursor-pointer">
-                      <Upload className="mr-2" /> Upload Image
+                      <Upload className="mr-2 h-4 w-4" /> Upload Image
                   </Label>
                 </Button>
               </div>
@@ -121,9 +177,9 @@ export function BioForm() {
             rows={3}
           />
           <div className="flex justify-end">
-            <Button size="sm" onClick={handleGenerateBio} disabled={isPending}>
+            <Button size="sm" onClick={handleGenerateBio} disabled={isGenerating}>
               <Sparkles className="mr-2 h-4 w-4" />
-              {isPending ? 'Generating...' : 'Generate Bio'}
+              {isGenerating ? 'Generating...' : 'Generate Bio'}
             </Button>
           </div>
         </div>
