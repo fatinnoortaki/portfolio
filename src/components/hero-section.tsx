@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -5,9 +7,39 @@ import { portfolioData } from '@/lib/data';
 import { ArrowRight, ExternalLink } from 'lucide-react';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query, where, limit } from 'firebase/firestore';
+import type { Project } from '@/lib/definitions';
+import { Skeleton } from './ui/skeleton';
 
 export function HeroSection() {
-  const featuredProjects = portfolioData.projects.filter(p => p.featured).slice(0, 2);
+  const firestore = useFirestore();
+  const featuredQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(
+      collection(firestore, 'projects'),
+      where('featured', '==', true),
+      limit(2)
+    );
+  }, [firestore]);
+  
+  const { data: featuredProjects, isLoading } = useCollection<Project>(featuredQuery);
+
+
+  const renderSkeletons = () => (
+    [...Array(2)].map((_, i) => (
+      <Card key={i}>
+        <Skeleton className="h-48 w-full" />
+        <CardHeader>
+          <Skeleton className="h-6 w-3/4 mb-2" />
+          <div className="flex flex-wrap gap-2 pt-2">
+            <Skeleton className="h-6 w-16" />
+            <Skeleton className="h-6 w-20" />
+          </div>
+        </CardHeader>
+      </Card>
+    ))
+  );
 
   return (
     <section id="hero" className="w-full py-20 md:py-24 lg:py-32 border-b">
@@ -37,11 +69,11 @@ export function HeroSection() {
             </div>
           </div>
           
-          {featuredProjects.length > 0 && (
-            <div className="w-full max-w-5xl">
-              <h3 className="text-2xl font-bold tracking-tight text-center mb-6 font-headline">Featured Projects</h3>
-              <div className="grid gap-6 md:grid-cols-2">
-                {featuredProjects.map((project) => (
+          <div className="w-full max-w-5xl">
+            <h3 className="text-2xl font-bold tracking-tight text-center mb-6 font-headline">Featured Projects</h3>
+            <div className="grid gap-6 md:grid-cols-2">
+              {isLoading ? renderSkeletons() : (
+                featuredProjects && featuredProjects.map((project) => (
                   <Card key={project.id} className="group overflow-hidden">
                     <Link href={project.liveUrl || '#'} target="_blank" rel="noopener noreferrer">
                       <div className="relative h-48">
@@ -67,10 +99,10 @@ export function HeroSection() {
                       </CardHeader>
                     </Link>
                   </Card>
-                ))}
-              </div>
+                ))
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </section>

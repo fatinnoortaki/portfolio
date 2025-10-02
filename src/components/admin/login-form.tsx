@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useAuth } from '@/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -23,7 +23,7 @@ import { Label } from '@/components/ui/label';
 import { LogIn } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { createUser } from '@/lib/actions';
+import { createUserClient } from '@/lib/client-actions';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -39,6 +39,7 @@ export function LoginForm() {
   const [authError, setAuthError] = useState<string | null>(null);
   const { toast } = useToast();
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
 
   const {
@@ -59,7 +60,7 @@ export function LoginForm() {
       if (isSignUp) {
         const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
         const user = userCredential.user;
-        await createUser(user.uid, user.email);
+        await createUserClient(firestore, user.uid, user.email);
 
         toast({
             title: 'Success!',
@@ -84,7 +85,7 @@ export function LoginForm() {
         title: 'Authentication Failed',
         description:
           error.code === 'auth/email-already-in-use'
-            ? 'This email is already in use. Please delete the user in the Firebase Authentication console and try again.'
+            ? 'This email is already in use.'
             : error.code === 'auth/invalid-credential'
             ? 'Invalid email or password.'
             : error.message || 'An unexpected error occurred.',

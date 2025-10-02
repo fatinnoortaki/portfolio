@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect, useTransition } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
-import { toggleAdminRole } from '@/lib/actions';
+import { collection } from 'firebase/firestore';
+import { toggleAdminRoleClient } from '@/lib/client-actions';
 import {
   Card,
   CardContent,
@@ -60,11 +60,12 @@ export function UsersAdmin() {
   const handleRoleChange = (uid: string, isAdmin: boolean) => {
     setUserRoles(prev => ({...prev, [uid]: isAdmin }));
     startTransition(async () => {
-      const result = await toggleAdminRole(uid, isAdmin);
-      if (result.success) {
+      try {
+        await toggleAdminRoleClient(firestore, uid, isAdmin);
         toast({ title: 'Success', description: `User role updated.` });
-      } else {
-        toast({ variant: 'destructive', title: 'Error', description: result.message });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'An unknown error occurred.';
+        toast({ variant: 'destructive', title: 'Error', description: message });
         // Revert on failure
         setUserRoles(prev => ({...prev, [uid]: !isAdmin }));
       }

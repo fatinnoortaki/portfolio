@@ -1,9 +1,10 @@
 'use client';
-import { useState, useTransition } from 'react';
-import { portfolioData } from '@/lib/data';
+import { useState, useTransition, useEffect } from 'react';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
 import type { Experience, Education } from '@/lib/definitions';
 import { generateResumeSummary } from '@/ai/flows/generate-resume-summary';
-import { saveResume } from '@/lib/actions';
+import { saveResumeClient } from '@/lib/client-actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,18 +12,35 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Sparkles, Briefcase, GraduationCap, PlusCircle, Trash } from 'lucide-react';
+import { Skeleton } from '../ui/skeleton';
 
 export function ResumeAdmin() {
-  const [isPending, startTransition] = useTransition();
+  const [isGenerating, startGeneratingTransition] = useTransition();
   const [isSaving, startSavingTransition] = useTransition();
   const { toast } = useToast();
+  const firestore = useFirestore();
 
-  const [experiences, setExperiences] = useState<Experience[]>(portfolioData.experiences);
-  const [educations, setEducations] = useState<Education[]>(portfolioData.educations);
+  const expQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'resumeEntries'), where('type', '==', 'experience')) : null, [firestore]);
+  const eduQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'resumeEntries'), where('type', '==', 'education')) : null, [firestore]);
+
+  const { data: initialExperiences, isLoading: isLoadingExp } = useCollection<Experience>(expQuery);
+  const { data: initialEducations, isLoading: isLoadingEdu } = useCollection<Education>(eduQuery);
+  
+  const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [educations, setEducations] = useState<Education[]>([]);
   const [summary, setSummary] = useState('');
 
+  useEffect(() => {
+    if (initialExperiences) setExperiences(initialExperiences);
+  }, [initialExperiences]);
+
+  useEffect(() => {
+    if (initialEducations) setEducations(initialEducations);
+  }, [initialEducations]);
+
+
   const handleGenerateSummary = () => {
-    startTransition(async () => {
+    startGeneratingTransition(async () => {
       const expText = experiences.map(e => `${e.role} at ${e.company}: ${e.description}`).join('\n');
       const eduText = educations.map(e => `${e.degree} from ${e.institution}`).join('\n');
       if (!expText || !eduText) {
@@ -41,11 +59,12 @@ export function ResumeAdmin() {
 
   const handleSaveAll = () => {
     startSavingTransition(async () => {
-      const result = await saveResume(experiences, educations);
-      if (result.success) {
+      try {
+        await saveResumeClient(firestore, experiences, educations);
         toast({ title: 'Success', description: 'Resume sections saved successfully!' });
-      } else {
-        toast({ variant: 'destructive', title: 'Error', description: result.message });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Failed to save resume.';
+        toast({ variant: 'destructive', title: 'Error', description: message });
       }
     });
   };
@@ -63,6 +82,16 @@ export function ResumeAdmin() {
   
   const removeExperience = (id: string) => setExperiences(experiences.filter(e => e.id !== id));
   const removeEducation = (id: string) => setEducations(educations.filter(e => e.id !== id));
+  
+  if (isLoadingExp || isLoadingEdu) {
+      return (
+          <div className="space-y-6">
+              <Skeleton className="h-48 w-full" />
+              <Skeleton className="h-48 w-full" />
+              <Skeleton className="h-32 w-full" />
+          </div>
+      )
+  }
 
   return (
     <div className="space-y-6">
@@ -127,9 +156,9 @@ export function ResumeAdmin() {
         <CardContent className="space-y-4">
           <Textarea id="summary" placeholder="Your generated summary will appear here..." value={summary} readOnly rows={5} />
           <div className="flex justify-end">
-            <Button size="sm" onClick={handleGenerateSummary} disabled={isPending}>
+            <Button size="sm" onClick={handleGenerateSummary} disabled={isGenerating}>
               <Sparkles className="mr-2 h-4 w-4" />
-              {isPending ? 'Generating...' : 'Generate Summary'}
+              {isGenerating ? 'Generating...' : 'Generate Summary'}
             </Button>
           </div>
         </CardContent>

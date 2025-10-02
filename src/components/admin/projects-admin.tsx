@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import Image from 'next/image';
-import { portfolioData } from '@/lib/data';
-import { saveProjects } from '@/lib/actions';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+import { saveProjectsClient } from '@/lib/client-actions';
 import type { Project } from '@/lib/definitions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,14 +12,24 @@ import { PlusCircle, MoreHorizontal, Trash, Edit, Save } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ProjectDialog } from './project-dialog';
 import { useToast } from '@/hooks/use-toast';
-
+import { Skeleton } from '../ui/skeleton';
 
 export function ProjectsAdmin() {
-  const [projects, setProjects] = useState<Project[]>(portfolioData.projects);
+  const firestore = useFirestore();
+  const projectsQuery = useMemoFirebase(() => firestore ? collection(firestore, 'projects') : null, [firestore]);
+  const { data: initialProjects, isLoading: isLoadingProjects } = useCollection<Project>(projectsQuery);
+
+  const [projects, setProjects] = useState<Project[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isSaving, startSavingTransition] = useTransition();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (initialProjects) {
+      setProjects(initialProjects);
+    }
+  }, [initialProjects]);
 
   const handleAddNew = () => {
     setSelectedProject(null);
@@ -50,14 +61,31 @@ export function ProjectsAdmin() {
 
   const handleSaveAll = () => {
     startSavingTransition(async () => {
-        const result = await saveProjects(projects);
-        if (result.success) {
-            toast({ title: 'Success!', description: 'Projects saved successfully.' });
-        } else {
-            toast({ variant: 'destructive', title: 'Error', description: result.message });
-        }
+      try {
+        await saveProjectsClient(firestore, projects);
+        toast({ title: 'Success!', description: 'Projects saved successfully.' });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Failed to save projects.';
+        toast({ variant: 'destructive', title: 'Error', description: message });
+      }
     });
   };
+
+  if (isLoadingProjects) {
+    return (
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-32" />
+                <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <Skeleton className="h-48 w-full" />
+                <Skeleton className="h-48 w-full" />
+                <Skeleton className="h-48 w-full" />
+            </CardContent>
+        </Card>
+    );
+  }
 
   return (
     <>
