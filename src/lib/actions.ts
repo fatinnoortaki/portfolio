@@ -86,62 +86,61 @@ const getImageData = (id: string) => {
   };
 };`;
     
-    // We need to handle Data URIs for uploaded images
+    // Handle different image URL types for projects
     const projectsWithHandledImages = updatedData.projects.map(p => {
-        if (p.imageUrl.startsWith('data:image')) {
-            // In a real app, you'd upload this to a storage bucket and get a URL.
-            // For this demo, we'll keep the data URI.
-            return p;
+        const isDataUri = p.imageUrl.startsWith('data:image');
+        const isPlaceholderFunc = p.imageUrl.startsWith('getImageData');
+
+        if (isDataUri || isPlaceholderFunc) {
+            // It's a data URI or already a function call, keep it as is.
+             return { ...p, imageUrl: `'${p.imageUrl}'` };
         }
-        // It's a placeholder, reconstruct the function call
-        const placeholderId = p.id.replace('proj-', 'project');
-        return {
-            ...p,
-            imageUrl: `getImageData('${placeholderId}').url`,
-            imageHint: `getImageData('${placeholderId}').hint`
-        };
+        
+        // It's likely a placeholder ID or an external URL
+        const placeholder = PlaceHolderImages.find(img => img.id === p.id.replace('proj-', 'project'));
+        if (placeholder && p.imageUrl === placeholder.imageUrl) {
+             return {
+                ...p,
+                imageUrl: `getImageData('${placeholder.id}').url`,
+                imageHint: `getImageData('${placeholder.id}').hint`
+             };
+        }
+
+        // It's a normal URL, so stringify it.
+        return { ...p, imageUrl: `'${p.imageUrl}'` };
     });
     
     let profilePhotoUrlString = `'${updatedData.profilePhotoUrl}'`;
     let profilePhotoHintString = `'${updatedData.profilePhotoHint}'`;
 
-    if (updatedData.profilePhotoUrl.startsWith('data:image')) {
-        profilePhotoUrlString = `'${updatedData.profilePhotoUrl}'`;
-    } else {
+    if (!updatedData.profilePhotoUrl.startsWith('data:image')) {
         profilePhotoUrlString = `getImageData('profilePhoto').url`;
         profilePhotoHintString = `getImageData('profilePhoto').hint`;
     }
+    
+    // We need to use placeholders before JSON.stringify to avoid escaping issues
+    const finalData = { ...updatedData };
+    
+    let dataString = JSON.stringify(finalData, (key, value) => {
+        if (key === 'imageUrl' || key === 'imageHint') return `%%${key}%%`;
+        return value;
+    }, 2);
 
-    const finalData = {
-        ...updatedData,
-        profilePhotoUrl: 'PROFILE_PHOTO_URL_PLACEHOLDER',
-        profilePhotoHint: 'PROFILE_PHOTO_HINT_PLACEHOLDER',
-        projects: projectsWithHandledImages.map(p => ({
-            ...p,
-            imageUrl: p.imageUrl.startsWith('data:image') ? p.imageUrl : 'IMAGE_URL_PLACEHOLDER',
-            imageHint: p.imageUrl.startsWith('data:image') ? p.imageHint : 'IMAGE_HINT_PLACEHOLDER',
-        }))
-    };
+    dataString = dataString.replace(/"%%profilePhotoUrl%%"/g, profilePhotoUrlString);
+    dataString = dataString.replace(/"%%profilePhotoHint%%"/g, profilePhotoHintString);
 
-    let dataObjectString = JSON.stringify(finalData, null, 2)
-        .replace(`"PROFILE_PHOTO_URL_PLACEHOLDER"`, profilePhotoUrlString)
-        .replace(`"PROFILE_PHOTO_HINT_PLACEHOLDER"`, profilePhotoHintString);
-
-    // This is getting complex, but we need to put back the function calls for placeholders
-    finalData.projects.forEach((p, index) => {
-        if (!p.imageUrl.startsWith('data:image')) {
-            const placeholderId = updatedData.projects[index].id.replace('proj-', 'project');
-            dataObjectString = dataObjectString.replace(`"IMAGE_URL_PLACEHOLDER"`, `getImageData('${placeholderId}').url`);
-            dataObjectString = dataObjectString.replace(`"IMAGE_HINT_PLACEHOLDER"`, `getImageData('${placeholderId}').hint`);
+    updatedData.projects.forEach((p, index) => {
+        const handledProject = projectsWithHandledImages[index];
+        dataString = dataString.replace('"%%imageUrl%%"', handledProject.imageUrl);
+        // Special handling for imageHint to prevent double replacement if it's also a placeholder
+        if(handledProject.imageHint.startsWith('getImageData')) {
+             dataString = dataString.replace('"%%imageHint%%"', handledProject.imageHint);
+        } else {
+             dataString = dataString.replace('"%%imageHint%%"', `'${p.imageHint}'`);
         }
     });
 
-    // Clean up any remaining placeholders if a project was removed
-    dataObjectString = dataObjectString.replace(/"IMAGE_URL_PLACEHOLDER",/g, "");
-    dataObjectString = dataObjectString.replace(/"IMAGE_HINT_PLACEHOLDER",/g, "");
-
-
-    const fileContent = `${fileHeader}\n\nexport const portfolioData: PortfolioData = ${dataObjectString};\n`;
+    const fileContent = `${fileHeader}\n\nexport const portfolioData: PortfolioData = ${dataString};\n`;
     
     await fs.writeFile(filePath, fileContent, 'utf-8');
 }
@@ -152,13 +151,12 @@ async function updatePortfolioData(newData: Partial<PortfolioData>) {
     const updatedData: PortfolioData = { 
         ...currentData, 
         ...newData,
-        // Make sure we're not overwriting the whole arrays, but merging if needed
         experiences: newData.experiences || currentData.experiences,
         educations: newData.educations || currentData.educations,
         projects: newData.projects || currentData.projects,
-        socialLinks: currentData.socialLinks, // Not editable in UI yet
-        contactMessages: currentData.contactMessages, // Not editable in UI
-        cvUrl: currentData.cvUrl, // Not editable in UI
+        socialLinks: currentData.socialLinks,
+        contactMessages: currentData.contactMessages,
+        cvUrl: currentData.cvUrl,
     };
     
     await updatePortfolioDataFile(updatedData);
