@@ -1,26 +1,5 @@
 {
   "entities": {
-    "UserProfile": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "UserProfile",
-      "type": "object",
-      "description": "Represents a user's public profile information.",
-      "properties": {
-        "uid": {
-          "type": "string",
-          "description": "The user's unique ID from Firebase Authentication."
-        },
-        "email": {
-          "type": "string",
-          "description": "The user's email address.",
-          "format": "email"
-        }
-      },
-      "required": [
-        "uid",
-        "email"
-      ]
-    },
     "About": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "About",
@@ -33,11 +12,11 @@
         },
         "bio": {
           "type": "string",
-          "description": "Biographical text content for the 'About' section."
+          "description": "A detailed biography of the individual."
         },
         "photoUrl": {
           "type": "string",
-          "description": "URL of the photo displayed in the 'About' section.",
+          "description": "URL of the individual's photograph.",
           "format": "uri"
         },
         "funFacts": {
@@ -59,7 +38,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Project",
       "type": "object",
-      "description": "Represents a portfolio project.",
+      "description": "Represents a project showcased in the portfolio.",
       "properties": {
         "id": {
           "type": "string",
@@ -80,19 +59,14 @@
         },
         "techStack": {
           "type": "array",
-          "description": "Array of technologies used in the project.",
+          "description": "An array of technologies used in the project.",
           "items": {
             "type": "string"
           }
         },
-        "liveLink": {
+        "link": {
           "type": "string",
-          "description": "Link to the live project (if applicable).",
-          "format": "uri"
-        },
-        "githubLink": {
-          "type": "string",
-          "description": "Link to the project's GitHub repository.",
+          "description": "URL to the project's live demo or repository.",
           "format": "uri"
         }
       },
@@ -101,7 +75,8 @@
         "title",
         "description",
         "imageUrl",
-        "techStack"
+        "techStack",
+        "link"
       ]
     },
     "ResumeEntry": {
@@ -116,35 +91,37 @@
         },
         "type": {
           "type": "string",
-          "description": "Type of resume entry (e.g., 'experience' or 'education')."
+          "description": "Type of resume entry (e.g., 'experience', 'education')."
         },
         "title": {
           "type": "string",
-          "description": "Title of the resume entry (e.g., job title or degree)."
-        },
-        "company": {
-          "type": "string",
-          "description": "Company or institution associated with the entry (if applicable)."
-        },
-        "dates": {
-          "type": "string",
-          "description": "Start and end dates for the entry."
+          "description": "Title of the entry (e.g., job title, degree)."
         },
         "description": {
           "type": "string",
-          "description": "Description of the responsibilities or achievements."
+          "description": "Description of the entry (e.g., responsibilities, coursework)."
+        },
+        "startDate": {
+          "type": "string",
+          "description": "Start date of the entry.",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "End date of the entry (or 'Present').",
+          "format": "date-time"
         }
       },
       "required": [
         "id",
         "type",
         "title",
-        "dates",
-        "description"
+        "description",
+        "startDate"
       ]
     },
     "ContactMessage": {
-      "$schema": "http://json-schema.org/draft-07-schema#",
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "ContactMessage",
       "type": "object",
       "description": "Represents a message submitted through the contact form.",
@@ -155,11 +132,11 @@
         },
         "name": {
           "type": "string",
-          "description": "Name of the person submitting the message."
+          "description": "Name of the sender."
         },
         "email": {
           "type": "string",
-          "description": "Email address of the person submitting the message.",
+          "description": "Email address of the sender.",
           "format": "email"
         },
         "message": {
@@ -179,38 +156,16 @@
         "message",
         "sentAt"
       ]
-    },
-    "AdminRole": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "AdminRole",
-      "type": "object",
-      "description": "An empty entity representing an admin role. The document ID is the user's UID.",
-      "properties": {}
     }
   },
   "auth": {
     "providers": [
-      "password"
+      "password",
+      "anonymous"
     ]
   },
   "firestore": {
     "structure": [
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "UserProfile",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Stores public user profile information. The document ID is the user's UID.",
-           "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase UID of the user."
-            }
-          ]
-        }
-      },
       {
         "path": "/about/{aboutId}",
         "definition": {
@@ -218,11 +173,11 @@
           "schema": {
             "$ref": "#/backend/entities/About"
           },
-          "description": "Stores the 'About' section content. Each document represents a single About section. Admin users have full access.",
+          "description": "Stores the 'About' section content. Only admins can create, update, or delete. There will only be one About document, aboutId is fixed.",
           "params": [
             {
               "name": "aboutId",
-              "description": "Unique identifier for the About section. There will likely only be a single document with ID 'main'."
+              "description": "The unique identifier for the about document. Only one document should exist and it's id should be constant, such as 'main'."
             }
           ]
         }
@@ -234,43 +189,43 @@
           "schema": {
             "$ref": "#/backend/entities/Project"
           },
-          "description": "Stores project details for the portfolio. Admin users have full access.",
+          "description": "Stores project documents. Only admins can create, update, or delete.",
           "params": [
             {
               "name": "projectId",
-              "description": "Unique identifier for each project."
+              "description": "The unique identifier for the project."
             }
           ]
         }
       },
       {
-        "path": "/resume_entries/{resumeEntryId}",
+        "path": "/resumeEntries/{resumeEntryId}",
         "definition": {
           "entityName": "ResumeEntry",
           "schema": {
             "$ref": "#/backend/entities/ResumeEntry"
           },
-          "description": "Stores resume entries (experience and education). Admin users have full access.",
+          "description": "Stores resume entries. Only admins can create, update, or delete.",
           "params": [
             {
               "name": "resumeEntryId",
-              "description": "Unique identifier for each resume entry."
+              "description": "The unique identifier for the resume entry."
             }
           ]
         }
       },
       {
-        "path": "/contact_messages/{contactMessageId}",
+        "path": "/contactMessages/{contactMessageId}",
         "definition": {
           "entityName": "ContactMessage",
           "schema": {
             "$ref": "#/backend/entities/ContactMessage"
           },
-          "description": "Stores contact form submissions. Admin users have read access.",
+          "description": "Stores contact messages submitted through the contact form. Only admins can list or read these messages.",
           "params": [
             {
               "name": "contactMessageId",
-              "description": "Unique identifier for each contact message."
+              "description": "The unique identifier for the contact message."
             }
           ]
         }
@@ -278,20 +233,20 @@
       {
         "path": "/roles_admin/{userId}",
         "definition": {
-          "entityName": "AdminRole",
+          "entityName": "roles_admin",
           "schema": {
-            "$ref": "#/backend/entities/AdminRole"
+            "$ref": "#/backend/entities/ContactMessage"
           },
-          "description": "Collection to store admin user IDs. Presence of a document indicates admin role. Authorization relies on existence.",
+          "description": "Presence-based role assignment. If a document exists for a user ID, that user is an admin. The content of this document is not relevant, only its existence.",
           "params": [
             {
               "name": "userId",
-              "description": "The Firebase UID of the admin user."
+              "description": "The unique identifier for the user."
             }
           ]
         }
       }
     ],
-    "reasoning": "The Firestore structure is designed to manage data for a personal portfolio website, focusing on clarity, security, and scalability. It leverages structural segregation by separating different data types into distinct collections with specific access control needs. Authorization independence is achieved by denormalizing access control information where necessary, avoiding the need for `get()` calls in security rules. The use of dedicated collections and path-based ownership simplifies security rules and enables secure list operations (QAPs). The admin role is managed using a dedicated collection, enabling easy role verification. Overall, this structure allows for simple, robust, and easily debuggable security rules while maintaining data integrity."
+    "reasoning": "The Firestore structure is designed to manage content for a personal portfolio website, focusing on simplicity, security, and scalability. It includes collections for 'About' information, 'Projects', 'Resume Entries', and 'Contact Messages'. A separate collection manages admin roles to gate access to content modification. This design adheres to the core principles of Authorization Independence, Clarity of Intent, DBAC, and QAPs. Authorization Independence is achieved by avoiding hierarchical `get()` calls in security rules, relying instead on path-based ownership and role checks. Segregation ensures that each collection has a clear security posture. \n\nSpecifically:\n\n*   `/about`: Stores a single document with the 'About' information. Security rules ensure only admins can modify it.\n*   `/projects`: Stores project documents. Security rules ensure only admins can create, update, or delete projects.\n*   `/resumeEntries`: Stores resume entries. Security rules ensure only admins can create, update, or delete resume entries.\n*   `/contactMessages`: Stores contact messages submitted through the contact form. Only admins can list or read these messages.\n*   `/roles_admin/{uid}`: Presence-based role assignment. If a document exists for a user ID, that user is an admin.\n\nThis structure supports the QAPs (Rules Are Not Filters) by ensuring that list operations are secured through role-based access control. Admins can list all documents in the 'projects', 'resumeEntries', and 'contactMessages' collections, while regular users cannot list any of these collections. Read access to 'about' can be configured based on the desired level of public visibility."
   }
 }
