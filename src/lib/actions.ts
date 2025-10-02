@@ -133,22 +133,28 @@ export async function saveResume(experiences: Experience[], educations: Educatio
 export async function createUser(uid: string, email: string | null) {
   try {
     const { firestore } = getAdminApp();
-    const adminRolesQuery = await getDocs(collection(firestore, 'roles_admin'));
-    const hasAdmins = !adminRolesQuery.empty;
+    const batch = writeBatch(firestore);
 
-    // Save user info to Firestore
+    // Get all existing users and admin roles to delete them
+    const usersSnapshot = await getDocs(collection(firestore, 'users'));
+    usersSnapshot.forEach(doc => batch.delete(doc.ref));
+
+    const adminsSnapshot = await getDocs(collection(firestore, 'roles_admin'));
+    adminsSnapshot.forEach(doc => batch.delete(doc.ref));
+
+    await batch.commit();
+
+    // Now, create the new user
     await setDoc(doc(firestore, 'users', uid), {
       uid: uid,
       email: email,
     });
 
-    // If no admins exist, make this new user an admin
-    if (!hasAdmins) {
-      await setDoc(doc(firestore, 'roles_admin', uid), {});
-      return { success: true, isAdmin: true, message: 'Admin account created!' };
-    }
+    // Since all other admins were removed, this new user becomes the first admin
+    await setDoc(doc(firestore, 'roles_admin', uid), {});
     
-    return { success: true, isAdmin: false, message: 'User account created.' };
+    revalidatePath('/admin/users'); // Revalidate the user management page
+    return { success: true, isAdmin: true, message: 'Admin account created!' };
 
   } catch (error) {
     const message = error instanceof Error ? error.message : 'An unknown error occurred.';
