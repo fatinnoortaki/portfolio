@@ -1,24 +1,60 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import { AdminHeader } from '@/components/admin/admin-header';
 import { AdminNav } from '@/components/admin/admin-nav';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/firebase';
+import { signOut } from 'firebase/auth';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
+  const firestore = useFirestore();
+  const auth = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
 
   useEffect(() => {
-    // If loading is finished and there's no user, redirect to login.
-    if (!isUserLoading && !user) {
-      router.push('/login');
+    if (isUserLoading) {
+      return;
     }
-  }, [user, isUserLoading, router]);
+    if (!user) {
+      router.push('/login');
+      return;
+    }
 
-  // While loading, you can show a loader or a skeleton screen.
-  if (isUserLoading || !user) {
+    const checkAdminStatus = async () => {
+      try {
+        const adminDocRef = doc(firestore, 'roles_admin', user.uid);
+        const adminDoc = await getDoc(adminDocRef);
+        if (adminDoc.exists()) {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+        setIsAdmin(false);
+      } finally {
+        setIsCheckingAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [user, isUserLoading, router, firestore]);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push('/login');
+  };
+
+  if (isUserLoading || isCheckingAdmin) {
     return (
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
         <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r bg-background sm:flex">
@@ -50,7 +86,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  // If the user is authenticated, render the admin layout.
+  if (!isAdmin) {
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-muted/40">
+            <Alert variant="destructive" className="max-w-md">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Access Denied</AlertTitle>
+                <AlertDescription>
+                    You are not authorized to access this page. Please contact the site administrator if you believe this is an error.
+                </AlertDescription>
+                <Button onClick={handleLogout} variant="secondary" className="mt-4">
+                    Logout
+                </Button>
+            </Alert>
+        </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r bg-background sm:flex">

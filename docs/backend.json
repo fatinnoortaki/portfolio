@@ -123,7 +123,7 @@
       ]
     },
     "ContactMessage": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$schema": "http://json-schema.org/draft-07-schema#",
       "title": "ContactMessage",
       "type": "object",
       "description": "Represents a message submitted through the contact form.",
@@ -158,12 +158,18 @@
         "message",
         "sentAt"
       ]
+    },
+    "AdminRole": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AdminRole",
+      "type": "object",
+      "description": "An empty entity representing an admin role. The document ID is the user's UID.",
+      "properties": {}
     }
   },
   "auth": {
     "providers": [
-      "password",
-      "anonymous"
+      "password"
     ]
   },
   "firestore": {
@@ -179,7 +185,7 @@
           "params": [
             {
               "name": "aboutId",
-              "description": "Unique identifier for the About section.  There will likely only be a single document with ID 'main'."
+              "description": "Unique identifier for the About section. There will likely only be a single document with ID 'main'."
             }
           ]
         }
@@ -223,7 +229,7 @@
           "schema": {
             "$ref": "#/backend/entities/ContactMessage"
           },
-          "description": "Stores contact form submissions.  Admin users have read access.",
+          "description": "Stores contact form submissions. Admin users have read access.",
           "params": [
             {
               "name": "contactMessageId",
@@ -235,11 +241,11 @@
       {
         "path": "/roles_admin/{userId}",
         "definition": {
-          "entityName": "roles_admin",
+          "entityName": "AdminRole",
           "schema": {
-            "$ref": "#/backend/entities/user"
+            "$ref": "#/backend/entities/AdminRole"
           },
-          "description": "Collection to store admin user IDs. Presence of a document indicates admin role.  Authorization relies on existence.",
+          "description": "Collection to store admin user IDs. Presence of a document indicates admin role. Authorization relies on existence.",
           "params": [
             {
               "name": "userId",
@@ -249,6 +255,6 @@
         }
       }
     ],
-    "reasoning": "The Firestore structure is designed to manage data for a personal portfolio website, focusing on clarity, security, and scalability. It leverages structural segregation by separating different data types into distinct collections with specific access control needs.  Authorization independence is achieved by denormalizing access control information where necessary, avoiding the need for `get()` calls in security rules. The use of dedicated collections and path-based ownership simplifies security rules and enables secure list operations (QAPs).  The admin role is managed using a dedicated collection, enabling easy role verification. Overall, this structure allows for simple, robust, and easily debuggable security rules while maintaining data integrity."
+    "reasoning": "The Firestore structure is designed to manage data for a personal portfolio website, focusing on clarity, security, and scalability. It leverages structural segregation by separating different data types into distinct collections with specific access control needs. Authorization independence is achieved by denormalizing access control information where necessary, avoiding the need for `get()` calls in security rules. The use of dedicated collections and path-based ownership simplifies security rules and enables secure list operations (QAPs). The admin role is managed using a dedicated collection, enabling easy role verification. Overall, this structure allows for simple, robust, and easily debuggable security rules while maintaining data integrity."
   }
 }
