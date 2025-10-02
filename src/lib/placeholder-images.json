@@ -3,44 +3,44 @@
     {
       "id": "profilePhoto",
       "description": "A portrait of the portfolio owner.",
-      "imageUrl": "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cG9ydHJhaXQlMjBwcm9mZXNzaW9uYWx8ZW58MHx8fHwxNzU5MzU5ODY1fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "portrait professional"
+      "imageUrl": "https://images.unsplash.com/photo-1593104547489-5cfb3839a3b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MHx8fHwxNzI5MDI4MTI2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "student portrait"
     },
     {
       "id": "featuredProject1",
       "description": "Screenshot of the first featured project.",
-      "imageUrl": "https://images.unsplash.com/photo-1590479773265-7464e5d48118?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3ZWJzaXRlJTIwdGVjaG5vbG9neXxlbnwwfHx8fDE3NTkzOTg4ODN8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "website technology"
+      "imageUrl": "https://images.unsplash.com/photo-1503762696324-33216a694663?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxhZ3JpY3VsdHVyZSUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzI5MDI4MTU2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "agriculture technology"
     },
     {
       "id": "featuredProject2",
       "description": "Screenshot of the second featured project.",
-      "imageUrl": "https://images.unsplash.com/photo-1558655146-364adaf1fcc9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhcHAlMjBpbnRlcmZhY2V8ZW58MHx8fHwxNzU5MzM1NjY2fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "app interface"
+      "imageUrl": "https://images.unsplash.com/photo-1588850615949-3544a48c484f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWFydCUyMGZhcm1pbmd8ZW58MHx8fHwxNzI5MDI4MTYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "smart farming"
     },
     {
       "id": "project1",
       "description": "Portfolio project 1",
-      "imageUrl": "https://images.unsplash.com/photo-1594729095022-e2f6d2eece9c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YWJzdHJhY3QlMjBjb2RlfGVufDB8fHx8MTc1OTMyOTMyOXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "abstract code"
+      "imageUrl": "https://images.unsplash.com/photo-1542379361-1e4381273952?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjcm9wJTIweWllbGR8ZW58MHx8fHwxNzI5MDI4MjE0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "crop yield"
     },
     {
       "id": "project2",
       "description": "Portfolio project 2",
-      "imageUrl": "https://images.unsplash.com/photo-1705909773420-8d7af2a343f9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtb2Rlcm4lMjB3b3Jrc3BhY2V8ZW58MHx8fHwxNzU5MzA0Mjg1fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "modern workspace"
+      "imageUrl": "https://images.unsplash.com/photo-1624555130222-a169e3834346?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWFydCUyMGlyaWdhdGlvbnxlbnwwfHx8fDE3MjkwMjgyMzR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "smart irrigation"
     },
     {
       "id": "project3",
       "description": "Portfolio project 3",
-      "imageUrl": "https://images.unsplash.com/photo-1728995025396-b5141e209455?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxkYXRhJTIwdmlzdWFsaXphdGlvbnxlbnwwfHx8fDE3NTkzNDU2MzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "data visualization"
+      "imageUrl": "https://images.unsplash.com/photo-1615828247383-a75b48108c4a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwbGFudCUyMGRpc2Vhc2V8ZW58MHx8fHwxNzI5MDI4MjU4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "plant disease"
     },
     {
       "id": "project4",
       "description": "Portfolio project 4",
-      "imageUrl": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtb2JpbGUlMjBhcHBsaWNhdGlvbnxlbnwwfHx8fDE3NTkzMzM2MjR8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "mobile application"
+      "imageUrl": "https://images.unsplash.com/photo-1591135364402-534720073e04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmYXJtZXJzJTIwbWFya2V0fGVufDB8fHx8MTcyOTAyODMwMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "farmers market"
     },
     {
       "id": "project5",

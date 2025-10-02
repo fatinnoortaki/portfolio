@@ -1,6 +1,16 @@
 import Image from 'next/image';
 import { portfolioData } from '@/lib/data';
 import { Card, CardContent } from '@/components/ui/card';
+import { Microscope, Leaf, Bot, BarChart } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+
+const iconMap: { [key: string]: LucideIcon } = {
+  "🔬": Microscope,
+  "🌱": Leaf,
+  "🤖": Bot,
+  "📈": BarChart,
+};
+
 
 export function AboutSection() {
   return (
@@ -31,14 +41,17 @@ export function AboutSection() {
             <div className="space-y-4 pt-4">
                 <h3 className="text-xl font-bold font-headline">A Few Fun Facts</h3>
                 <div className="grid grid-cols-2 gap-4">
-                    {portfolioData.funFacts.map((fact) => (
+                    {portfolioData.funFacts.map((fact) => {
+                      const Icon = iconMap[fact.icon] || Leaf;
+                      return (
                         <Card key={fact.text} className="bg-background/70">
                             <CardContent className="p-4 flex items-center gap-4">
-                                <span className="text-2xl">{fact.icon}</span>
+                                <Icon className="h-6 w-6 text-primary" />
                                 <p className="text-sm text-foreground/90">{fact.text}</p>
                             </CardContent>
                         </Card>
-                    ))}
+                      )
+                    })}
                 </div>
             </div>
           </div>
