@@ -1,4 +1,4 @@
-import { initializeApp, getApps, getApp, cert, type App } from 'firebase-admin/app';
+import { initializeApp, getApps, getApp, cert, type App, type ServiceAccount } from 'firebase-admin/app';
 import { getAuth, type Auth } from 'firebase-admin/auth';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 
@@ -18,9 +18,18 @@ function getAdminApp(): AdminApp {
     };
   }
 
-  // When running in a Google Cloud environment, the SDK can automatically
-  // discover the service account credentials.
-  const app = initializeApp();
+  let serviceAccount: ServiceAccount | undefined;
+  try {
+    if (process.env.SERVICE_ACCOUNT) {
+      serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT);
+    }
+  } catch (e) {
+    console.error('Failed to parse SERVICE_ACCOUNT environment variable.', e);
+  }
+
+  const app = initializeApp({
+    credential: serviceAccount ? cert(serviceAccount) : undefined,
+  });
   
   return {
     app,
