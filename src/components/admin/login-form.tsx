@@ -59,28 +59,13 @@ export function LoginForm() {
       if (isSignUp) {
         const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
         const user = userCredential.user;
-        const result = await createUser(user.uid, user.email);
+        await createUser(user.uid, user.email);
 
-        if (!result.success) {
-            // This is a server-side error, need to handle it.
-            // For now, we will sign the user out and show a generic error.
-             if (auth.currentUser) {
-                await auth.signOut();
-             }
-             throw new Error(result.message || 'Failed to create user record.');
-        }
-
-        if (result.isAdmin) {
-          toast({
-            title: 'Admin Account Created!',
-            description: 'You have been made the first administrator.',
-          });
-        } else {
-          toast({
+        toast({
             title: 'Success!',
             description: 'Your account has been created.',
-          });
-        }
+        });
+
       } else {
         await signInWithEmailAndPassword(auth, data.email, data.password);
         toast({

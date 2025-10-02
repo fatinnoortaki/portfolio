@@ -21,11 +21,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '../ui/skeleton';
-
-type UserProfile = {
-  uid: string;
-  email: string;
-};
+import type { UserProfile } from '@/lib/definitions';
 
 type AdminRole = {
   id: string;
@@ -36,8 +32,15 @@ export function UsersAdmin() {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
-  const usersQuery = useMemoFirebase(() => collection(firestore, 'users'), [firestore]);
-  const adminsQuery = useMemoFirebase(() => collection(firestore, 'roles_admin'), [firestore]);
+  const usersQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'users');
+  }, [firestore]);
+  
+  const adminsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'roles_admin');
+  }, [firestore]);
 
   const { data: users, isLoading: usersLoading } = useCollection<UserProfile>(usersQuery);
   const { data: admins, isLoading: adminsLoading } = useCollection<AdminRole>(adminsQuery);

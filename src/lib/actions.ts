@@ -119,24 +119,10 @@ export async function saveResume(experiences: Experience[], educations: Educatio
 
 export async function createUser(uid: string, email: string | null) {
   try {
-    const adminRolesSnapshot = await adminDb.collection('roles_admin').limit(1).get();
-    
-    if (adminRolesSnapshot.empty) {
-        const userBatch = adminDb.batch();
-        const userRef = adminDb.collection('users').doc(uid);
-        userBatch.set(userRef, { uid, email });
-
-        const adminRef = adminDb.collection('roles_admin').doc(uid);
-        userBatch.set(adminRef, {});
-        
-        await userBatch.commit();
-        revalidatePath('/admin/users');
-        return { success: true, isAdmin: true, message: 'Admin account created! You have been made the first administrator.' };
-    } else {
-        await adminDb.collection('users').doc(uid).set({ uid, email });
-        revalidatePath('/admin/users');
-        return { success: true, isAdmin: false, message: 'User account created successfully.' };
-    }
+    // Simplified user creation. Just add the user to the 'users' collection.
+    await adminDb.collection('users').doc(uid).set({ uid, email });
+    revalidatePath('/admin/users');
+    return { success: true, message: 'User account created successfully.' };
   } catch (error) {
     console.error('Error creating user:', error);
     const message = error instanceof Error ? error.message : 'An unknown error occurred.';
