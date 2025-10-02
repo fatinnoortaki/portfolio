@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { getAdminApp } from '@/firebase/server';
-import { doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
+import { doc, setDoc, deleteDoc, writeBatch, getDocs, collection } from 'firebase/firestore';
 import type { FunFact, Project, Experience, Education } from './definitions';
 
 const contactSchema = z.object({
@@ -128,4 +128,30 @@ export async function saveResume(experiences: Experience[], educations: Educatio
         console.error('Error saving resume:', error);
         return { success: false, message: 'Failed to save resume.' };
     }
+}
+
+export async function createUser(uid: string, email: string | null) {
+  try {
+    const { firestore } = getAdminApp();
+    const adminRolesQuery = await getDocs(collection(firestore, 'roles_admin'));
+    const hasAdmins = !adminRolesQuery.empty;
+
+    // Save user info to Firestore
+    await setDoc(doc(firestore, 'users', uid), {
+      uid: uid,
+      email: email,
+    });
+
+    // If no admins exist, make this new user an admin
+    if (!hasAdmins) {
+      await setDoc(doc(firestore, 'roles_admin', uid), {});
+      return { success: true, isAdmin: true, message: 'Admin account created!' };
+    }
+    
+    return { success: true, isAdmin: false, message: 'User account created.' };
+
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'An unknown error occurred.';
+    return { success: false, message };
+  }
 }

@@ -24,6 +24,7 @@ import { Label } from '@/components/ui/label';
 import { LogIn } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { createUser } from '@/lib/actions';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -58,28 +59,24 @@ export function LoginForm() {
     setAuthError(null);
     try {
       if (isSignUp) {
-        // Check if any admin users exist
-        const adminRolesQuery = await getDocs(collection(firestore, 'roles_admin'));
-        const hasAdmins = !adminRolesQuery.empty;
-        
         const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
         const user = userCredential.user;
-        
-        // Also save user info to Firestore
-        await setDoc(doc(firestore, 'users', user.uid), {
-          uid: user.uid,
-          email: user.email,
-        });
+        const result = await createUser(user.uid, user.email);
 
-        // If no admins exist, make this new user an admin
-        if (!hasAdmins) {
-          await setDoc(doc(firestore, 'roles_admin', user.uid), {});
-           toast({
+        if (!result.success) {
+            // This is a server-side error, need to handle it.
+            // For now, we will sign the user out and show a generic error.
+             await auth.signOut();
+             throw new Error(result.message || 'Failed to create user record.');
+        }
+
+        if (result.isAdmin) {
+          toast({
             title: 'Admin Account Created!',
             description: 'You have been made the first administrator.',
           });
         } else {
-           toast({
+          toast({
             title: 'Success!',
             description: 'Your account has been created.',
           });
@@ -93,8 +90,7 @@ export function LoginForm() {
       }
       router.push('/admin');
     } catch (error: any) {
-      // Temporarily sign out the user if the rest of the logic fails
-      if (isSignUp) {
+      if (isSignUp && auth.currentUser) {
           await auth.signOut();
       }
       setAuthError(error.message);
