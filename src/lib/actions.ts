@@ -2,14 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { adminDb } from '@/firebase/server';
-import { z } from 'zod';
-import type { ContactFormState, FunFact, Project, Experience, Education } from './definitions';
-
-const contactSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  email: z.string().email({ message: 'Please enter a valid email.' }),
-  message: z.string().min(10, { message: 'Message must be at least 10 characters.' }),
-});
+import { contactSchema, type ContactFormState, type FunFact, type Project, type Experience, type Education } from './definitions';
 
 export async function submitContactForm(
   prevState: ContactFormState,
