@@ -1,4 +1,4 @@
-import { contactMessages } from '@/lib/data';
+import { portfolioData } from '@/lib/data';
 import {
   Card,
   CardContent,
@@ -35,9 +35,9 @@ export function MessagesTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {contactMessages.map((msg) => (
+            {portfolioData.contactMessages.map((msg) => (
               <TableRow key={msg.id}>
-                <TableCell className="whitespace-nowrap">{msg.timestamp.toLocaleDateString()}</TableCell>
+                <TableCell className="whitespace-nowrap">{new Date(msg.timestamp).toLocaleDateString()}</TableCell>
                 <TableCell className="font-medium">{msg.name}</TableCell>
                 <TableCell>{msg.email}</TableCell>
                 <TableCell>{msg.message}</TableCell>
