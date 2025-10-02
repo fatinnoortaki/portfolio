@@ -133,28 +133,26 @@ export async function saveResume(experiences: Experience[], educations: Educatio
 export async function createUser(uid: string, email: string | null) {
   try {
     const { firestore } = getAdminApp();
-    const batch = writeBatch(firestore);
 
-    // Get all existing users and admin roles to delete them
-    const usersSnapshot = await getDocs(collection(firestore, 'users'));
-    usersSnapshot.forEach(doc => batch.delete(doc.ref));
-
+    // Check if there are any admins
     const adminsSnapshot = await getDocs(collection(firestore, 'roles_admin'));
-    adminsSnapshot.forEach(doc => batch.delete(doc.ref));
+    const isFirstAdmin = adminsSnapshot.empty;
 
-    await batch.commit();
-
-    // Now, create the new user
+    // Create the user document
     await setDoc(doc(firestore, 'users', uid), {
       uid: uid,
       email: email,
     });
 
-    // Since all other admins were removed, this new user becomes the first admin
-    await setDoc(doc(firestore, 'roles_admin', uid), {});
+    let message = 'Account created successfully.';
+    if (isFirstAdmin) {
+      // If no admins exist, make this user the first admin
+      await setDoc(doc(firestore, 'roles_admin', uid), {});
+      message = 'Admin account created! You have been made the first administrator.';
+    }
     
     revalidatePath('/admin/users'); // Revalidate the user management page
-    return { success: true, isAdmin: true, message: 'Admin account created!' };
+    return { success: true, isAdmin: isFirstAdmin, message };
 
   } catch (error) {
     const message = error instanceof Error ? error.message : 'An unknown error occurred.';
