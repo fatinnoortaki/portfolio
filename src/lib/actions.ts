@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { adminDb } from '@/firebase/server';
-import { contactSchema, type ContactFormState, type FunFact, type Project, type Experience, type Education } from './definitions';
+import { contactSchema, type ContactFormState, type FunFact, type Project, type Experience, type Education, type UserProfile } from './definitions';
 
 export async function submitContactForm(
   prevState: ContactFormState,
@@ -53,13 +53,17 @@ export async function toggleAdminRole(uid: string, isAdmin: boolean) {
 
 export async function saveBio(bio: string, funFacts: FunFact[], photoUrl: string) {
     try {
+        // Prevent saving large base64 strings
+        if (photoUrl && photoUrl.startsWith('data:image')) {
+            return { success: false, message: 'Image upload is not supported. Please paste a URL instead as the image file is too large to save directly.' };
+        }
         await adminDb.collection('about').doc('main').set({ bio, funFacts, photoUrl }, { merge: true });
         revalidatePath('/');
         revalidatePath('/admin');
         return { success: true, message: 'Bio updated successfully.' };
     } catch (error) {
         console.error('Error saving bio:', error);
-        return { success: false, message: 'Failed to save bio.' };
+        return { success: false, message: 'Failed to save bio. The data might be too large for the database.' };
     }
 }
 
@@ -119,12 +123,18 @@ export async function saveResume(experiences: Experience[], educations: Educatio
 
 export async function createUser(uid: string, email: string | null) {
   try {
-    // Simplified user creation. Just add the user to the 'users' collection.
-    await adminDb.collection('users').doc(uid).set({ uid, email });
-    revalidatePath('/admin/users');
-    return { success: true, message: 'User account created successfully.' };
+    const userRef = adminDb.collection('users').doc(uid);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+       const newUser: UserProfile = { uid, email };
+       await userRef.set(newUser);
+    }
+    
+    revalidatePath('/admin');
+    return { success: true, message: 'User account processed.' };
   } catch (error) {
-    console.error('Error creating user:', error);
+    console.error('Error creating user record:', error);
     const message = error instanceof Error ? error.message : 'An unknown error occurred.';
     return { success: false, message };
   }
