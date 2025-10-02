@@ -29,6 +29,7 @@ const prompt = ai.definePrompt({
   name: 'generateBioContentPrompt',
   input: {schema: GenerateBioContentInputSchema},
   output: {schema: GenerateBioContentOutputSchema},
+  model: 'googleai/gemini-2.5-flash',
   prompt: `You are a professional bio writer. Based on the user input, generate engaging and informative bio content.
 
 User Input: {{{userInput}}}
