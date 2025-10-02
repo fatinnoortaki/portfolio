@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
+import { FirebaseClientProvider } from '@/firebase';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -22,10 +23,12 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <ThemeProvider defaultTheme="system">
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        <FirebaseClientProvider>
+          <ThemeProvider defaultTheme="system">
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </FirebaseClientProvider>
       </body>
     </html>
   );

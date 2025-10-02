@@ -1,12 +1,24 @@
+'use client';
 import Link from 'next/link';
 import Image from 'next/image';
 import { LogOut, Eye } from 'lucide-react';
+import { useAuth } from '@/firebase';
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 
 interface AdminNavProps {
   isMobile?: boolean;
 }
 
 export function AdminNav({ isMobile = false }: AdminNavProps) {
+  const auth = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push('/login');
+  };
+
   return (
     <nav className="flex flex-col gap-4 text-sm text-muted-foreground h-full">
       <Link
@@ -28,13 +40,13 @@ export function AdminNav({ isMobile = false }: AdminNavProps) {
           <Eye className="h-4 w-4" />
           View Live Site
         </Link>
-        <Link
-          href="/login"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary text-left"
         >
           <LogOut className="h-4 w-4" />
           Logout
-        </Link>
+        </button>
       </div>
     </nav>
   );

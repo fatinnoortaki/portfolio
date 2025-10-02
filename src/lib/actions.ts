@@ -1,7 +1,6 @@
 'use server';
 
 import { z } from 'zod';
-import { redirect } from 'next/navigation';
 import { promises as fs } from 'fs';
 import path from 'path';
 import type { PortfolioData, FunFact, Experience, Education, Project } from './definitions';
@@ -51,25 +50,6 @@ export async function submitContactForm(
   return { message: 'Thank you for your message! I will get back to you soon.' };
 }
 
-
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
-});
-
-export async function authenticate(prevState: string | undefined, formData: FormData) {
-  try {
-    const validated = loginSchema.parse(Object.fromEntries(formData));
-    console.log('Attempting login for user:', validated.email);
-    // In a real app, you'd validate credentials against a database
-  } catch (error) {
-    if (error instanceof Error) {
-      return 'Invalid credentials.';
-    }
-    throw error;
-  }
-  redirect('/admin');
-}
 
 async function updatePortfolioDataFile(updatedData: PortfolioData) {
     const filePath = path.join(process.cwd(), 'src', 'lib', 'data.ts');
@@ -178,5 +158,17 @@ export async function saveResume(experiences: Experience[], educations: Educatio
 }
 
 export async function saveProjects(projects: Project[]) {
-    return await updatePortfolioData({ projects });
+    const projectsWithResolvedImages = projects.map(p => {
+        if (p.imageUrl.startsWith('getImageData')) {
+            const id = p.imageUrl.match(/'([^']+)'/)?.[1];
+            if (id) {
+                const placeholder = PlaceHolderImages.find(img => img.id === id);
+                if (placeholder) {
+                    return { ...p, imageUrl: placeholder.imageUrl, imageHint: placeholder.imageHint };
+                }
+            }
+        }
+        return p;
+    });
+    return await updatePortfolioData({ projects: projectsWithResolvedImages });
 }
