@@ -1,3 +1,7 @@
+'use server';
+import { config } from 'dotenv';
+config();
+
 import { initializeApp, getApps, getApp, cert, type App, type ServiceAccount } from 'firebase-admin/app';
 import { getAuth, type Auth } from 'firebase-admin/auth';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
