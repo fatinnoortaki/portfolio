@@ -1,24 +1,8 @@
 'use server';
 
-import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { adminDb } from '@/firebase/server';
-import type { FunFact, Project, Experience, Education } from './definitions';
-
-const contactSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  email: z.string().email({ message: 'Please enter a valid email.' }),
-  message: z.string().min(10, { message: 'Message must be at least 10 characters.' }),
-});
-
-export type ContactFormState = {
-  message: string;
-  errors?: {
-    name?: string[];
-    email?: string[];
-    message?: string[];
-  };
-};
+import { contactSchema, type ContactFormState, type FunFact, type Project, type Experience, type Education } from './definitions';
 
 export async function submitContactForm(
   prevState: ContactFormState,
@@ -84,10 +68,17 @@ export async function saveBio(bio: string, funFacts: FunFact[], photoUrl: string
 export async function saveProjects(projects: Project[]) {
     try {
         const batch = adminDb.batch();
+        
+        // First delete all existing projects to handle deletions
+        const snapshot = await adminDb.collection('projects').get();
+        snapshot.docs.forEach(doc => batch.delete(doc.ref));
+
+        // Then add all the current projects
         projects.forEach(project => {
             const projectRef = adminDb.collection('projects').doc(project.id);
             batch.set(projectRef, project);
         });
+        
         await batch.commit();
 
         revalidatePath('/');
@@ -103,6 +94,12 @@ export async function saveProjects(projects: Project[]) {
 export async function saveResume(experiences: Experience[], educations: Education[]) {
     try {
         const batch = adminDb.batch();
+
+        const expSnapshot = await adminDb.collection('resumeEntries').where('type', '==', 'experience').get();
+        expSnapshot.docs.forEach(doc => batch.delete(doc.ref));
+
+        const eduSnapshot = await adminDb.collection('resumeEntries').where('type', '==', 'education').get();
+        eduSnapshot.docs.forEach(doc => batch.delete(doc.ref));
 
         experiences.forEach(exp => {
             const docRef = adminDb.collection('resumeEntries').doc(exp.id);

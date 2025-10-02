@@ -1,7 +1,8 @@
 "use client"
 import React, { useEffect, useRef, useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { submitContactForm, type ContactFormState } from '@/lib/actions';
+import { submitContactForm } from '@/lib/actions';
+import type { ContactFormState } from '@/lib/definitions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
