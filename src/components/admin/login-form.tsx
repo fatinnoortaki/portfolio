@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { authenticate } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,7 +25,7 @@ function LoginButton() {
 }
 
 export function LoginForm() {
-  const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+  const [errorMessage, dispatch] = useActionState(authenticate, undefined);
 
   return (
     <Card className="w-full max-w-sm">
