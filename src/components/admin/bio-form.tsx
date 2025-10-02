@@ -75,7 +75,7 @@ export function BioForm() {
          <div className="space-y-2">
             <Label>Profile Photo</Label>
             <div className="flex items-center gap-4">
-              <Image src={profilePhotoUrl} alt="Profile Preview" width={80} height={80} className="rounded-full object-cover border" />
+              {profilePhotoUrl && <Image src={profilePhotoUrl} alt="Profile Preview" width={80} height={80} className="rounded-full object-cover border" />}
               <div className="flex-grow space-y-2">
                 <Input 
                     type="url"
