@@ -2,7 +2,9 @@
 
 import { revalidatePath } from 'next/cache';
 import { adminDb } from '@/firebase/server';
-import { contactSchema, type ContactFormState, type FunFact, type Project, type Experience, type Education } from './definitions';
+import type { ContactFormState, FunFact, Project, Experience, Education } from './definitions';
+import { contactSchema } from './definitions';
+
 
 export async function submitContactForm(
   prevState: ContactFormState,
@@ -122,9 +124,9 @@ export async function saveResume(experiences: Experience[], educations: Educatio
 
 export async function createUser(uid: string, email: string | null) {
   try {
-    const adminRoles = await adminDb.collection('roles_admin').get();
+    const adminRolesSnapshot = await adminDb.collection('roles_admin').limit(1).get();
     
-    if (adminRoles.empty) {
+    if (adminRolesSnapshot.empty) {
         // This is the first user, make them an admin.
         const userBatch = adminDb.batch();
         const userRef = adminDb.collection('users').doc(uid);

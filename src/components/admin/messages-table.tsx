@@ -1,4 +1,8 @@
-import { portfolioData } from '@/lib/data';
+'use client';
+
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, orderBy, query } from 'firebase/firestore';
+import type { ContactMessage } from '@/lib/definitions';
 import {
   Card,
   CardContent,
@@ -14,8 +18,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Skeleton } from '../ui/skeleton';
 
 export function MessagesTable() {
+  const firestore = useFirestore();
+  const messagesQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'contactMessages'), orderBy('sentAt', 'desc'));
+  }, [firestore]);
+
+  const { data: messages, isLoading } = useCollection<ContactMessage>(messagesQuery);
+
   return (
     <Card>
       <CardHeader>
@@ -25,6 +38,13 @@ export function MessagesTable() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {isLoading ? (
+           <div className="space-y-2">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+           </div>
+        ) : (
         <Table>
           <TableHeader>
             <TableRow>
@@ -35,16 +55,27 @@ export function MessagesTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {portfolioData.contactMessages.map((msg) => (
-              <TableRow key={msg.id}>
-                <TableCell className="whitespace-nowrap">{new Date(msg.timestamp).toLocaleDateString()}</TableCell>
-                <TableCell className="font-medium">{msg.name}</TableCell>
-                <TableCell>{msg.email}</TableCell>
-                <TableCell>{msg.message}</TableCell>
+            {messages && messages.length > 0 ? (
+              messages.map((msg) => (
+                <TableRow key={msg.id}>
+                  <TableCell className="whitespace-nowrap">
+                    {msg.sentAt ? new Date(msg.sentAt.seconds * 1000).toLocaleDateString() : 'N/A'}
+                  </TableCell>
+                  <TableCell className="font-medium">{msg.name}</TableCell>
+                  <TableCell>{msg.email}</TableCell>
+                  <TableCell>{msg.message}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4} className="h-24 text-center">
+                  No messages received yet.
+                </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
+        )}
       </CardContent>
     </Card>
   );

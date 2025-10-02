@@ -37,6 +37,14 @@ export type Education = {
   period: string;
 };
 
+export type ContactMessage = {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  sentAt: Date;
+};
+
 export type PortfolioData = {
   name: string;
   tagline: string;
@@ -50,15 +58,6 @@ export type PortfolioData = {
   educations: Education[];
   cvUrl: string;
 };
-
-export type ContactMessage = {
-  id: string;
-  name: string;
-  email: string;
-  message: string;
-  timestamp: Date;
-};
-
 
 export type UserProfile = {
     uid: string;
