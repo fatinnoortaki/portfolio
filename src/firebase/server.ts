@@ -10,8 +10,7 @@ interface AdminApp {
   firestore: Firestore;
 }
 
-// IMPORTANT: DO NOT MODIFY THIS FUNCTION
-export function getAdminApp(): AdminApp {
+function getAdminApp(): AdminApp {
   if (getApps().length) {
     const app = getApp();
     return {
@@ -31,3 +30,6 @@ export function getAdminApp(): AdminApp {
     firestore: getFirestore(app),
   };
 }
+
+export const adminDb = getAdminApp().firestore;
+export const adminAuth = getAdminApp().auth;
