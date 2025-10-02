@@ -51,20 +51,6 @@ export async function toggleAdminRole(uid: string, isAdmin: boolean) {
   }
 }
 
-export async function saveBio(bio: string, funFacts: FunFact[], photoUrl: string) {
-    try {
-        await adminDb.collection('about').doc('main').set({ bio, funFacts, photoUrl }, { merge: true });
-        revalidatePath('/');
-        revalidatePath('/admin');
-        return { success: true, message: 'Bio updated successfully.' };
-    } catch (error: any) {
-        console.error('Full error object in saveBio:', error);
-        const detailedMessage = `Server authentication failed using Application Default Credentials. Please check the environment configuration. Original error: ${error.message || 'An unknown error occurred.'}`;
-        return { success: false, message: detailedMessage };
-    }
-}
-
-
 export async function saveProjects(projects: Project[]) {
     try {
         const batch = adminDb.batch();

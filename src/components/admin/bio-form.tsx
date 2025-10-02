@@ -4,7 +4,8 @@ import { useState, useTransition } from 'react';
 import Image from 'next/image';
 import { portfolioData } from '@/lib/data';
 import { generateBioContent } from '@/ai/flows/generate-bio-content';
-import { saveBio } from '@/lib/actions';
+import { saveBioClient } from '@/lib/client-actions';
+import { useFirestore } from '@/firebase';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,6 +19,7 @@ export function BioForm() {
   const [isPending, startTransition] = useTransition();
   const [isSaving, startSavingTransition] = useTransition();
   const { toast } = useToast();
+  const firestore = useFirestore();
 
   const [bio, setBio] = useState(portfolioData.bio);
   const [userInput, setUserInput] = useState('');
@@ -42,13 +44,23 @@ export function BioForm() {
 
   const handleSaveChanges = () => {
     startSavingTransition(async () => {
-      // This is a mock save. In a real app, you'd upload the file if it's a data URL,
-      // get back a permanent URL, and save that to the database.
-      const result = await saveBio(bio, funFacts, profilePhotoUrl);
-      if (result.success) {
-        toast({ title: 'Success', description: result.message });
-      } else {
-        toast({ variant: 'destructive', title: 'Error', description: result.message });
+      try {
+        if (profilePhotoUrl.startsWith('data:')) {
+            toast({
+              variant: 'destructive',
+              title: 'Upload Not Supported',
+              description: 'Image upload is not supported. Please paste a URL instead.',
+            });
+            return;
+        }
+
+        await saveBioClient(firestore, bio, funFacts, profilePhotoUrl);
+        toast({ title: 'Success', description: 'Bio updated successfully.' });
+
+      } catch (error) {
+         console.error('Error saving bio:', error);
+         const message = error instanceof Error ? error.message : 'An unknown error occurred.';
+         toast({ variant: 'destructive', title: 'Error', description: message });
       }
     });
   };
