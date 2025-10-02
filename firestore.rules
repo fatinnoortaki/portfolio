@@ -1,142 +1,134 @@
-/**
- * @file Firestore Security Rules
- * @description This ruleset enforces a role-based access control model for a portfolio website.
- *
- * Data Structure:
- * - /about/{aboutId}: Stores the 'About' section content.
- * - /projects/{projectId}: Stores project documents.
- * - /resumeEntries/{resumeEntryId}: Stores resume entries.
- * - /contactMessages/{contactMessageId}: Stores contact messages.
- * - /roles_admin/{userId}: Presence-based role assignment for admins.
- *
- * Key Security Decisions:
- * - Only authenticated admins can create, update, or delete About, Projects, and ResumeEntry documents.
- * - Only authenticated admins can list or read ContactMessage documents.
- * - Admin status is determined by the existence of a document in the `/roles_admin/{userId}` collection.
- * - Listing of the /roles_admin collection is denied.
- *
- * Denormalization for Authorization:
- * - Admin status is determined by checking for the existence of a document in the `/roles_admin/{userId}` collection, allowing for simple `exists()` checks in the rules.
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Grants or denies admin privileges based on document existence in /roles_admin/{userId}.
+     * @description Grants or denies access based on whether the user is an admin.
+     * @param {string} userId - The user ID to check for admin status.
+     * @returns {bool} - True if the user is an admin, false otherwise.
      */
-    function isAdmin() {
-      return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    function isAdmin(userId) {
+      return exists(/databases/$(database)/documents/roles_admin/$(userId));
     }
 
     /**
      * @description Checks if the user is signed in.
+     * @returns {bool} - True if the user is signed in, false otherwise.
      */
     function isSignedIn() {
       return request.auth != null;
     }
 
     /**
-     * @description Allows admins to manage the 'About' document.
+     * @description Determines if the current user is the owner of the resource.
+     * @param {string} userId - The user ID to compare against the request's authentication UID.
+     * @returns {bool} - True if the user is the owner, false otherwise.
+     */
+    function isOwner(userId) {
+        return request.auth.uid == userId;
+    }
+
+    /**
+     * @description Checks if the user is the owner of the resource and the resource exists.
+     * @param {string} userId - The user ID to compare against the request's authentication UID.
+     * @returns {bool} - True if the user is the owner and the resource exists, false otherwise.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+    
+    /**
+     * @description Security rules for the 'about' collection.
      * @path /about/{aboutId}
-     * @allow (get) Authenticated user.
-     * @allow (list) Authenticated user.
-     * @allow (create) Authenticated admin creating the about document.
-     * @allow (update) Authenticated admin updating the about document.
-     * @allow (delete) Authenticated admin deleting the about document.
-     * @deny (create) Non-admin creating the about document.
-     * @deny (update) Non-admin updating the about document.
-     * @deny (delete) Non-admin deleting the about document.
-     * @principle Enforces admin-only access for modifying the 'About' content.
+     * @allow (create) - An admin user can create a document in the 'about' collection.
+     * @allow (update) - An admin user can update a document in the 'about' collection.
+     * @allow (delete) - An admin user can delete a document in the 'about' collection.
+     * @deny (create) - A non-admin user cannot create a document in the 'about' collection.
+     * @deny (update) - A non-admin user cannot update a document in the 'about' collection.
+     * @deny (delete) - A non-admin user cannot delete a document in the 'about' collection.
+     * @principle Enforces role-based access control; only admins can modify 'about' documents.
      */
     match /about/{aboutId} {
       allow get: if true;
       allow list: if true;
-      allow create: if isSignedIn() && isAdmin();
-      allow update: if isSignedIn() && isAdmin() && resource != null;
-      allow delete: if isSignedIn() && isAdmin() && resource != null;
+      allow create: if isSignedIn() && isAdmin(request.auth.uid);
+      allow update: if isSignedIn() && isAdmin(request.auth.uid);
+      allow delete: if isSignedIn() && isAdmin(request.auth.uid);
     }
 
     /**
-     * @description Allows admins to manage project documents.
+     * @description Security rules for the 'projects' collection.
      * @path /projects/{projectId}
-     * @allow (get) Authenticated user.
-     * @allow (list) Authenticated user.
-     * @allow (create) Authenticated admin creating a project.
-     * @allow (update) Authenticated admin updating a project.
-     * @allow (delete) Authenticated admin deleting a project.
-     * @deny (create) Non-admin creating a project.
-     * @deny (update) Non-admin updating a project.
-     * @deny (delete) Non-admin deleting a project.
-     * @principle Enforces admin-only access for managing project content.
+     * @allow (create) - An admin user can create a document in the 'projects' collection.
+     * @allow (update) - An admin user can update a document in the 'projects' collection.
+     * @allow (delete) - An admin user can delete a document in the 'projects' collection.
+     * @deny (create) - A non-admin user cannot create a document in the 'projects' collection.
+     * @deny (update) - A non-admin user cannot update a document in the 'projects' collection.
+     * @deny (delete) - A non-admin user cannot delete a document in the 'projects' collection.
+     * @principle Enforces role-based access control; only admins can modify 'projects' documents.
      */
     match /projects/{projectId} {
       allow get: if true;
       allow list: if true;
-      allow create: if isSignedIn() && isAdmin();
-      allow update: if isSignedIn() && isAdmin() && resource != null;
-      allow delete: if isSignedIn() && isAdmin() && resource != null;
+      allow create: if isSignedIn() && isAdmin(request.auth.uid);
+      allow update: if isSignedIn() && isAdmin(request.auth.uid);
+      allow delete: if isSignedIn() && isAdmin(request.auth.uid);
     }
 
     /**
-     * @description Allows admins to manage resume entry documents.
+     * @description Security rules for the 'resumeEntries' collection.
      * @path /resumeEntries/{resumeEntryId}
-     * @allow (get) Authenticated user.
-     * @allow (list) Authenticated user.
-     * @allow (create) Authenticated admin creating a resume entry.
-     * @allow (update) Authenticated admin updating a resume entry.
-     * @allow (delete) Authenticated admin deleting a resume entry.
-     * @deny (create) Non-admin creating a resume entry.
-     * @deny (update) Non-admin updating a resume entry.
-     * @deny (delete) Non-admin deleting a resume entry.
-     * @principle Enforces admin-only access for managing resume entries.
+     * @allow (create) - An admin user can create a document in the 'resumeEntries' collection.
+     * @allow (update) - An admin user can update a document in the 'resumeEntries' collection.
+     * @allow (delete) - An admin user can delete a document in the 'resumeEntries' collection.
+     * @deny (create) - A non-admin user cannot create a document in the 'resumeEntries' collection.
+     * @deny (update) - A non-admin user cannot update a document in the 'resumeEntries' collection.
+     * @deny (delete) - A non-admin user cannot delete a document in the 'resumeEntries' collection.
+     * @principle Enforces role-based access control; only admins can modify 'resumeEntries' documents.
      */
     match /resumeEntries/{resumeEntryId} {
       allow get: if true;
       allow list: if true;
-      allow create: if isSignedIn() && isAdmin();
-      allow update: if isSignedIn() && isAdmin() && resource != null;
-      allow delete: if isSignedIn() && isAdmin() && resource != null;
+      allow create: if isSignedIn() && isAdmin(request.auth.uid);
+      allow update: if isSignedIn() && isAdmin(request.auth.uid);
+      allow delete: if isSignedIn() && isAdmin(request.auth.uid);
     }
 
     /**
-     * @description Allows admins to list and read contact messages.
+     * @description Security rules for the 'contactMessages' collection.
      * @path /contactMessages/{contactMessageId}
-     * @allow (get) Authenticated admin reading a contact message.
-     * @allow (list) Authenticated admin listing contact messages.
-     * @deny (get) Non-admin reading a contact message.
-     * @deny (list) Non-admin listing contact messages.
-     * @deny (create) Anyone creating a contact message.
-     * @deny (update) Anyone updating a contact message.
-     * @deny (delete) Anyone deleting a contact message.
-     * @principle Enforces admin-only access for viewing contact messages.
+     * @allow (get) - An admin user can get a document in the 'contactMessages' collection.
+     * @allow (list) - An admin user can list documents in the 'contactMessages' collection.
+     * @deny (get) - A non-admin user cannot get a document in the 'contactMessages' collection.
+     * @deny (list) - A non-admin user cannot list documents in the 'contactMessages' collection.
+     * @allow (create) - Any signed in user can create a contact message.
+     * @deny (update) - No one can update a contact message.
+     * @deny (delete) - No one can delete a contact message.
+     * @principle Enforces role-based access control; only admins can list or read contact messages.
      */
     match /contactMessages/{contactMessageId} {
-      allow get: if isSignedIn() && isAdmin();
-      allow list: if isSignedIn() && isAdmin();
-      allow create: if false;
+      allow get: if isSignedIn() && isAdmin(request.auth.uid);
+      allow list: if isSignedIn() && isAdmin(request.auth.uid);
+      allow create: if isSignedIn();
       allow update: if false;
       allow delete: if false;
     }
-
+    
     /**
-     * @description Manages admin role assignment based on document existence.
+     * @description Security rules for the 'roles_admin' collection.  Determines admin status.
      * @path /roles_admin/{userId}
-     * @allow (create) Authenticated user creating their own admin role document.
-     * @allow (get) Authenticated admin reading a role.
-     * @allow (update) Authenticated admin updating a role.
-     * @allow (delete) Authenticated admin deleting a role.
-     * @deny (create) Non-admin creating an admin role document for another user.
-     * @deny (update) Non-admin updating an admin role document.
-     * @deny (delete) Non-admin deleting an admin role document.
-     * @principle Controls who can be assigned the admin role.
+     * @allow (get) - Only the user can get his/her role.
+     * @allow (list) - No one can list all users.
+     * @allow (create) - Only the user can create his/her role.
+     * @allow (update) - Only the user can update his/her role.
+     * @allow (delete) - Only the user can delete his/her role.
      */
     match /roles_admin/{userId} {
-      allow get: if isSignedIn() && isAdmin();
-      allow list: if false;
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if isSignedIn() && isAdmin() && resource != null;
-      allow delete: if isSignedIn() && isAdmin() && resource != null;
+        allow get: if isSignedIn() && isOwner(userId);
+        allow list: if false;
+        allow create: if isSignedIn() && isOwner(userId);
+        allow update: if isSignedIn() && isOwner(userId);
+        allow delete: if isSignedIn() && isOwner(userId);
     }
   }
 }
