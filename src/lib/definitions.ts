@@ -47,7 +47,6 @@ export type PortfolioData = {
   experiences: Experience[];
   educations: Education[];
   cvUrl: string;
-  contactMessages: ContactMessage[];
 };
 
 export type ContactMessage = {
@@ -57,3 +56,11 @@ export type ContactMessage = {
   message: string;
   timestamp: Date;
 };
+
+
+export type UserProfile = {
+    uid: string;
+    email: string | null;
+    displayName?: string | null;
+    photoURL?: string | null;
+}

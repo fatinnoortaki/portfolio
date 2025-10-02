@@ -6,6 +6,11 @@ import path from 'path';
 import type { PortfolioData, FunFact, Experience, Education, Project } from './definitions';
 import { portfolioData as currentData } from './data';
 import { PlaceHolderImages } from './placeholder-images';
+import { revalidatePath } from 'next/cache';
+
+// This is a mock import. In a real app, you'd get the admin app instance.
+import { getAdminApp } from '@/firebase/server'; 
+import { doc, setDoc, deleteDoc } from 'firebase/firestore';
 
 
 const contactSchema = z.object({
@@ -73,7 +78,7 @@ const getImageData = (id: string) => {
 
         if (isDataUri || isPlaceholderFunc) {
             // It's a data URI or already a function call, keep it as is.
-             return { ...p, imageUrl: `'${p.imageUrl}'` };
+             return { ...p, imageUrl: `"${p.imageUrl}"` };
         }
         
         // It's likely a placeholder ID or an external URL
@@ -113,16 +118,18 @@ const getImageData = (id: string) => {
         const handledProject = projectsWithHandledImages[index];
         dataString = dataString.replace('"%%imageUrl%%"', handledProject.imageUrl);
         // Special handling for imageHint to prevent double replacement if it's also a placeholder
-        if(handledProject.imageHint.startsWith('getImageData')) {
+        if(handledProject.imageHint && handledProject.imageHint.startsWith('getImageData')) {
              dataString = dataString.replace('"%%imageHint%%"', handledProject.imageHint);
         } else {
-             dataString = dataString.replace('"%%imageHint%%"', `'${p.imageHint}'`);
+             dataString = dataString.replace('"%%imageHint%%"', `'${p.imageHint || ''}'`);
         }
     });
 
     const fileContent = `${fileHeader}\n\nexport const portfolioData: PortfolioData = ${dataString};\n`;
     
     await fs.writeFile(filePath, fileContent, 'utf-8');
+    revalidatePath('/admin');
+    revalidatePath('/');
 }
 
 
@@ -135,7 +142,7 @@ async function updatePortfolioData(newData: Partial<PortfolioData>) {
         educations: newData.educations || currentData.educations,
         projects: newData.projects || currentData.projects,
         socialLinks: currentData.socialLinks,
-        contactMessages: currentData.contactMessages,
+        contactMessages: currentData.contactMessages || [],
         cvUrl: currentData.cvUrl,
     };
     
@@ -171,4 +178,25 @@ export async function saveProjects(projects: Project[]) {
         return p;
     });
     return await updatePortfolioData({ projects: projectsWithResolvedImages });
+}
+
+export async function toggleAdminRole(uid: string, isAdmin: boolean) {
+  try {
+    const { firestore } = getAdminApp();
+    const roleRef = doc(firestore, 'roles_admin', uid);
+
+    if (isAdmin) {
+      // Add the user to the admin roles
+      await setDoc(roleRef, {});
+    } else {
+      // Remove the user from admin roles
+      await deleteDoc(roleRef);
+    }
+    revalidatePath('/admin/users');
+    return { success: true, message: 'User role updated.' };
+  } catch (error) {
+    console.error('Error toggling admin role:', error);
+    const message = error instanceof Error ? error.message : 'An unknown error occurred.';
+    return { success: false, message };
+  }
 }
