@@ -1,6 +1,6 @@
 "use client"
-import React, { useEffect, useRef } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import React, { useEffect, useRef, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { submitContactForm, type ContactFormState } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,7 +21,7 @@ function SubmitButton() {
 
 export function ContactSection() {
   const initialState: ContactFormState = { message: '', errors: {} };
-  const [state, dispatch] = useFormState(submitContactForm, initialState);
+  const [state, dispatch] = useActionState(submitContactForm, initialState);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
 
