@@ -1,5 +1,5 @@
 'use client';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { generateProjectDescription } from '@/ai/flows/generate-project-description';
 import type { Project } from '@/lib/definitions';
 import { Button } from '@/components/ui/button';
@@ -24,10 +24,26 @@ interface ProjectDialogProps {
   onSave: (project: Project) => void;
 }
 
+const emptyProject: Partial<Project> = {
+  title: '',
+  description: '',
+  techStack: [],
+  imageUrl: '',
+  imageHint: '',
+  liveUrl: '',
+  repoUrl: '',
+};
+
 export function ProjectDialog({ project, open, onOpenChange, onSave }: ProjectDialogProps) {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
-  const [formData, setFormData] = useState<Partial<Project>>(project || {techStack: []});
+  const [formData, setFormData] = useState<Partial<Project>>(project || emptyProject);
+
+  useEffect(() => {
+    if (open) {
+      setFormData(project || emptyProject);
+    }
+  }, [project, open]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -44,7 +60,7 @@ export function ProjectDialog({ project, open, onOpenChange, onSave }: ProjectDi
         const { projectDescription } = await generateProjectDescription({
           projectName: formData.title,
           projectDetails: formData.description || '',
-          techStack: formData.techStack.join(', '),
+          techStack: Array.isArray(formData.techStack) ? formData.techStack.join(', ') : '',
         });
         setFormData(prev => ({ ...prev, description: projectDescription }));
         toast({ title: 'Success', description: 'New project description generated!' });
@@ -95,6 +111,10 @@ export function ProjectDialog({ project, open, onOpenChange, onSave }: ProjectDi
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="imageUrl" className="text-right">Image URL</Label>
             <Input id="imageUrl" name="imageUrl" value={formData.imageUrl || ''} onChange={handleInputChange} className="col-span-3" />
+          </div>
+           <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="imageHint" className="text-right">Image Hint</Label>
+            <Input id="imageHint" name="imageHint" value={formData.imageHint || ''} onChange={handleInputChange} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="liveUrl" className="text-right">Live URL</Label>

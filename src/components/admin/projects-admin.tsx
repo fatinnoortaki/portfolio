@@ -33,7 +33,13 @@ export function ProjectsAdmin() {
     if (project.id) {
       setProjects(projects.map(p => p.id === project.id ? project : p));
     } else {
-      setProjects([...projects, { ...project, id: `proj-${Date.now()}` }]);
+      const newProject: Project = { 
+        ...project, 
+        id: `proj-${Date.now()}`,
+        imageUrl: project.imageUrl || "https://picsum.photos/seed/project5/600/400",
+        imageHint: project.imageHint || "team collaboration",
+      };
+      setProjects([...projects, newProject]);
     }
   };
 
@@ -79,8 +85,8 @@ export function ProjectsAdmin() {
                 </CardHeader>
                 <CardContent>
                   <Image
-                    src={project.imageUrl}
-                    alt={project.title}
+                    src={project.imageUrl || "https://picsum.photos/seed/placeholder/600/400"}
+                    alt={project.title || "Project image"}
                     width={300}
                     height={200}
                     className="rounded-md object-cover w-full aspect-[3/2]"
