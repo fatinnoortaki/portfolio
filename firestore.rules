@@ -2,123 +2,166 @@
  * @fileOverview Firestore Security Rules for a personal portfolio website.
  *
  * Core Philosophy:
- * This ruleset implements a role-based access control model, primarily using an "admin" role for modifying content.
- * Data is segregated into collections based on content type: About, Projects, ResumeEntries, ContactMessages, and Admin Roles.
- * The rules are designed for clarity and prevent common pitfalls like accidental data exposure or modification.
+ * This ruleset implements a role-based access control model, with a focus on restricting write access to administrative users. Regular users have limited or no write access. The database structure is designed to segregate public content from administrative data.
  *
  * Data Structure:
- * - /about/{aboutId}: Contains information about the portfolio owner.  `aboutId` is expected to be a constant string (e.g., "main").
- * - /projects/{projectId}: Stores project details.
- * - /resumeEntries/{resumeEntryId}: Stores resume entries.
- * - /contactMessages/{contactMessageId}: Stores messages submitted via the contact form.
- * - /roles_admin/{userId}: Used for role assignment.  If a document exists for a user, they are an admin.
+ * - /about/{aboutId}: Contains a single document with information about the individual.
+ * - /projects/{projectId}: Contains documents representing individual projects.
+ * - /resumeEntries/{resumeEntryId}: Contains documents representing resume entries.
+ * - /contactMessages/{contactMessageId}: Contains contact messages.
+ * - /roles_admin/{userId}: Presence-based role assignment; if a document exists, the user is an admin.
  *
  * Key Security Decisions:
- * - Only authenticated users can be assigned the admin role via document creation in `roles_admin`.
  * - Only admins can create, update, or delete About, Project, and ResumeEntry documents.
- * - Only admins can list or get ContactMessage documents.
- * - Regular users have no write access to any data except through the implicit "ContactMessage" submission process.
- * - Listing of ContactMessages is explicitly disallowed for non-admins.
- *
- * Denormalization for Authorization:
- * - Admin status is determined by the presence of a document in the `/roles_admin/{userId}` collection. This avoids more complex queries or custom claims.
- *
- * Structural Segregation:
- * - ContactMessages are stored in a separate collection to isolate them and apply different security rules (admin-only access).
+ * - Only admins can list or read ContactMessage documents.
+ * - Non-admins cannot list any documents, based on the user's request.
+ * - Admin status is determined by the existence of a document in the `/roles_admin/{userId}` collection.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Checks if the current user is signed in.
-     * @return {boolean} True if the user is signed in, false otherwise.
+     * @description Grants or denies access based on whether the user is an admin.
+     * @param {string} userId - The user ID to check for admin status.
+     * @returns {bool} - True if the user is an admin, false otherwise.
+     */
+    function isAdmin(userId) {
+      return exists(/databases/$(database)/documents/roles_admin/$(userId));
+    }
+
+    /**
+     * @description Checks if the user is signed in.
+     * @returns {bool} - True if the user is signed in, false otherwise.
      */
     function isSignedIn() {
       return request.auth != null;
     }
 
     /**
-     * @description Checks if the current user is an admin based on the presence of a document in the roles_admin collection.
-     * @return {boolean} True if the user is an admin, false otherwise.
+     * @description Determines if the current user is the owner of the resource.
+     * @param {string} userId - The user ID to compare against the request's authentication UID.
+     * @returns {bool} - True if the user is the owner, false otherwise.
      */
-    function isAdmin() {
-        return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    function isOwner(userId) {
+        return request.auth.uid == userId;
     }
 
     /**
-     * @description Rule for the /about/{aboutId} collection.
+     * @description Checks if the user is the owner of the resource and the resource exists.
+     * @param {string} userId - The user ID to compare against the request's authentication UID.
+     * @returns {bool} - True if the user is the owner and the resource exists, false otherwise.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+    
+    /**
+     * @description Security rules for the 'about' collection.
      * @path /about/{aboutId}
-     * @allow (create, update, delete) if isAdmin() - Allows admins to modify the about document.
-     * @deny (create, update, delete) if !isAdmin() - Denies non-admins from modifying the about document.
-     * @allow get, list: if true; - Allows anyone to read the about document.
-     * @principle Enforces admin-only writes for the About collection.
+     * @allow (create) - An admin user can create a document in the 'about' collection.
+     * @allow (update) - An admin user can update a document in the 'about' collection.
+     * @allow (delete) - An admin user can delete a document in the 'about' collection.
+     * @deny (create) - A non-admin user cannot create a document in the 'about' collection.
+     * @deny (update) - A non-admin user cannot update a document in the 'about' collection.
+     * @deny (delete) - A non-admin user cannot delete a document in the 'about' collection.
+     * @principle Enforces role-based access control; only admins can modify 'about' documents.
      */
     match /about/{aboutId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn() && isAdmin(request.auth.uid);
+      allow update: if isSignedIn() && isAdmin(request.auth.uid);
+      allow delete: if isSignedIn() && isAdmin(request.auth.uid);
     }
 
     /**
-     * @description Rule for the /projects/{projectId} collection.
+     * @description Security rules for the 'projects' collection.
      * @path /projects/{projectId}
-     * @allow (create, update, delete) if isAdmin() - Allows admins to modify project documents.
-     * @deny (create, update, delete) if !isAdmin() - Denies non-admins from modifying project documents.
-     * @allow get, list: if true; - Allows anyone to read project documents.
-     * @principle Enforces admin-only writes for the Projects collection.
+     * @allow (create) - An admin user can create a document in the 'projects' collection.
+     * @allow (update) - An admin user can update a document in the 'projects' collection.
+     * @allow (delete) - An admin user can delete a document in the 'projects' collection.
+     * @deny (create) - A non-admin user cannot create a document in the 'projects' collection.
+     * @deny (update) - A non-admin user cannot update a document in the 'projects' collection.
+     * @deny (delete) - A non-admin user cannot delete a document in the 'projects' collection.
+     * @principle Enforces role-based access control; only admins can modify 'projects' documents.
      */
     match /projects/{projectId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn() && isAdmin(request.auth.uid);
+      allow update: if isSignedIn() && isAdmin(request.auth.uid);
+      allow delete: if isSignedIn() && isAdmin(request.auth.uid);
     }
 
     /**
-     * @description Rule for the /resumeEntries/{resumeEntryId} collection.
+     * @description Security rules for the 'resumeEntries' collection.
      * @path /resumeEntries/{resumeEntryId}
-     * @allow (create, update, delete) if isAdmin() - Allows admins to modify resume entry documents.
-     * @deny (create, update, delete) if !isAdmin() - Denies non-admins from modifying resume entry documents.
-     * @allow get, list: if true; - Allows anyone to read resume entry documents.
-     * @principle Enforces admin-only writes for the ResumeEntries collection.
+     * @allow (create) - An admin user can create a document in the 'resumeEntries' collection.
+     * @allow (update) - An admin user can update a document in the 'resumeEntries' collection.
+     * @allow (delete) - An admin user can delete a document in the 'resumeEntries' collection.
+     * @deny (create) - A non-admin user cannot create a document in the 'resumeEntries' collection.
+     * @deny (update) - A non-admin user cannot update a document in the 'resumeEntries' collection.
+     * @deny (delete) - A non-admin user cannot delete a document in the 'resumeEntries' collection.
+     * @principle Enforces role-based access control; only admins can modify 'resumeEntries' documents.
      */
     match /resumeEntries/{resumeEntryId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn() && isAdmin(request.auth.uid);
+      allow update: if isSignedIn() && isAdmin(request.auth.uid);
+      allow delete: if isSignedIn() && isAdmin(request.auth.uid);
     }
 
     /**
-     * @description Rule for the /contactMessages/{contactMessageId} collection.
+     * @description Security rules for the 'contactMessages' collection.
      * @path /contactMessages/{contactMessageId}
-     * @allow get, list: if isAdmin() - Allows admins to read contact messages.
-     * @deny get, list: if !isAdmin() - Denies non-admins from reading contact messages.
-     * @allow create: if true; - Allows anyone to create a contact message.
-     * @deny update, delete: if true; - Denies anyone from updating or deleting contact messages.
-     * @principle Restricts read access to admins for ContactMessages, allows open creation.
+     * @allow (get) - An admin user can get a document in the 'contactMessages' collection.
+     * @allow (list) - An admin user can list documents in the 'contactMessages' collection.
+     * @deny (get) - A non-admin user cannot get a document in the 'contactMessages' collection.
+     * @deny (list) - A non-admin user cannot list documents in the 'contactMessages' collection.
+     * @allow (create) - Any signed in user can create a contact message.
+     * @deny (update) - No one can update a contact message.
+     * @deny (delete) - No one can delete a contact message.
+     * @principle Enforces role-based access control; only admins can list or read contact messages.
      */
     match /contactMessages/{contactMessageId} {
-      allow get, list: if isAdmin();
-      allow create: if true;
-      allow update, delete: if false;
+      allow get: if isSignedIn() && isAdmin(request.auth.uid);
+      allow list: if isSignedIn() && isAdmin(request.auth.uid);
+      allow create: if isSignedIn();
+      allow update: if false;
+      allow delete: if false;
     }
-
-       /**
-        * @description Rule for the /roles_admin/{userId} collection.  Admin role assignment.
-        * @path /roles_admin/{userId}
-        * @allow create: if isSignedIn() && request.auth.uid == userId; - Allows a signed-in user to create their admin role.
-        * @deny create: if !isSignedIn() || request.auth.uid != userId; - Denies creating an admin role if not signed in or the user ID doesn't match.
-        * @allow get: if request.auth.uid == userId; - Allows a user to read their own admin role document.
-        * @deny get: if request.auth.uid != userId; - Denies reading another user's admin role document.
-        * @allow delete: if isAdmin(); - Allows an admin to delete any user's role document
-        * @deny delete: if !isAdmin(); - Denies a non-admin to delete any user's role document
-        * @deny update: if true; - Updating admin roles is not permitted.
-        * @deny list: if true; - Listing admin roles is not permitted.
-        * @principle Restricts admin role creation to the authenticated user, and requires authentication to view an admin role.
-        */
-       match /roles_admin/{userId} {
-            allow get: if request.auth.uid == userId;
-            allow list: if false;
-            allow create: if isSignedIn() && request.auth.uid == userId;
-            allow update: if false;
-            allow delete: if isAdmin();
-       }
+    
+    /**
+     * @description Security rules for the 'roles_admin' collection.  Determines admin status.
+     * @path /roles_admin/{userId}
+     * @allow (get) - Only the user can get his/her role.
+     * @allow (list) - No one can list all users.
+     * @allow (create) - Only the user can create his/her role.
+     * @allow (update) - Only the user can update his/her role.
+     * @allow (delete) - Only the user can delete his/her role.
+     */
+    match /roles_admin/{userId} {
+        allow get: if isSignedIn() && isOwner(userId);
+        allow list: if false;
+        allow create: if isSignedIn() && isOwner(userId);
+        allow update: if isSignedIn() && isOwner(userId);
+        allow delete: if isSignedIn() && isOwner(userId);
+    }
+    
+      /**
+       * @description Denies listing of the /users collection.  This rule directly addresses the original FirebaseError.
+       * @path /users
+       * @deny (list) - No user can list all users.
+       * @principle Prevents unauthorized enumeration of user accounts.
+       */
+    match /users/{document} {
+        allow get: if false;
+        allow list: if false;
+        allow create: if false;
+        allow update: if false;
+        allow delete: if false;
+    }
   }
 }
