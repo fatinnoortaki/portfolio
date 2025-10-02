@@ -59,8 +59,8 @@ export async function saveBio(bio: string, funFacts: FunFact[], photoUrl: string
         return { success: true, message: 'Bio updated successfully.' };
     } catch (error: any) {
         console.error('Full error object in saveBio:', error);
-        const message = error.message || 'An unknown error occurred.';
-        return { success: false, message: `Failed to save bio: ${message}` };
+        const detailedMessage = `Server authentication failed using Application Default Credentials. Please check the environment configuration. Original error: ${error.message || 'An unknown error occurred.'}`;
+        return { success: false, message: detailedMessage };
     }
 }
 
