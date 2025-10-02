@@ -64,7 +64,9 @@ export function LoginForm() {
         if (!result.success) {
             // This is a server-side error, need to handle it.
             // For now, we will sign the user out and show a generic error.
-             await auth.signOut();
+             if (auth.currentUser) {
+                await auth.signOut();
+             }
              throw new Error(result.message || 'Failed to create user record.');
         }
 
@@ -97,10 +99,10 @@ export function LoginForm() {
         title: 'Authentication Failed',
         description:
           error.code === 'auth/email-already-in-use'
-            ? 'This email is already in use.'
+            ? 'This email is already in use. Please delete the user in the Firebase Authentication console and try again.'
             : error.code === 'auth/invalid-credential'
             ? 'Invalid email or password.'
-            : 'An unexpected error occurred.',
+            : error.message || 'An unexpected error occurred.',
       });
     } finally {
       setIsSubmitting(false);
