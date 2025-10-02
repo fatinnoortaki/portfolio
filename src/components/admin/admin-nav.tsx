@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Code, LogOut, Eye } from 'lucide-react';
+import Image from 'next/image';
+import { LogOut, Eye } from 'lucide-react';
 
 interface AdminNavProps {
   isMobile?: boolean;
@@ -12,7 +13,7 @@ export function AdminNav({ isMobile = false }: AdminNavProps) {
         href="/admin"
         className="flex items-center gap-2 font-semibold text-foreground font-headline"
       >
-        <Code className="h-6 w-6" />
+        <Image src="/media/favicon.png" alt="Logo" width={24} height={24} className="h-6 w-6" />
         <span>Admin Panel</span>
       </Link>
       <div className="flex-1">

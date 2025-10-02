@@ -1,7 +1,8 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Code } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { ThemeToggle } from './theme-toggle';
 import { portfolioData } from '@/lib/data';
 
@@ -18,7 +19,7 @@ export function Header() {
       <div className="container flex h-14 max-w-screen-2xl items-center">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Code className="h-6 w-6 text-primary" />
+            <Image src="/media/favicon.png" alt="Logo" width={24} height={24} className="h-6 w-6" />
             <span className="hidden font-bold sm:inline-block font-headline">{portfolioData.name}</span>
           </Link>
           <nav className="flex items-center gap-4 text-sm lg:gap-6">
@@ -45,7 +46,7 @@ export function Header() {
               </SheetTrigger>
               <SheetContent side="left" className="pr-0">
                 <Link href="/" className="mr-6 flex items-center space-x-2">
-                  <Code className="h-6 w-6 text-primary" />
+                  <Image src="/media/favicon.png" alt="Logo" width={24} height={24} className="h-6 w-6" />
                   <span className="font-bold sm:inline-block font-headline">{portfolioData.name}</span>
                 </Link>
                 <div className="my-4 h-px w-full bg-border" />
