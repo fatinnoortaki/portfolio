@@ -53,10 +53,7 @@ export const portfolioData: PortfolioData = {
       "title": "Crop Yield Prediction Model",
       "description": "A machine learning model to predict crop yields based on historical data, weather patterns, and soil types, helping farmers make informed decisions.",
       "techStack": [
-        "Python",
-        "Scikit-learn",
-        "Pandas",
-        "Jupyter"
+        ""
       ],
       "imageUrl": getImageData('project1').url,
       "imageHint": getImageData('project1').hint,

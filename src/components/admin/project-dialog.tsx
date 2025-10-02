@@ -129,7 +129,7 @@ export function ProjectDialog({ project, open, onOpenChange, onSave }: ProjectDi
                       type="url"
                       name="imageUrl"
                       placeholder="Or paste image URL"
-                      value={formData.imageUrl?.startsWith('data:') ? '' : formData.imageUrl}
+                      value={formData.imageUrl || ''}
                       onChange={handleInputChange}
                   />
                   <Input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
