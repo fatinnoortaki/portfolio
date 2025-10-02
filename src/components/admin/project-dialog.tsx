@@ -124,12 +124,21 @@ export function ProjectDialog({ project, open, onOpenChange, onSave }: ProjectDi
             <Label className="text-right">Image</Label>
             <div className="col-span-3 flex items-center gap-4">
                 {formData.imageUrl && <Image src={formData.imageUrl} alt="Project preview" width={80} height={60} className="rounded-md object-cover" />}
-                <Input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                <Button asChild variant="outline">
-                    <Label htmlFor="imageUpload" className="cursor-pointer">
-                        <Upload className="mr-2" /> Upload
-                    </Label>
-                </Button>
+                <div className="flex-grow space-y-2">
+                  <Input 
+                      type="url"
+                      name="imageUrl"
+                      placeholder="Or paste image URL"
+                      value={formData.imageUrl?.startsWith('data:') ? '' : formData.imageUrl}
+                      onChange={handleInputChange}
+                  />
+                  <Input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                  <Button asChild variant="outline">
+                      <Label htmlFor="imageUpload" className="cursor-pointer">
+                          <Upload className="mr-2" /> Upload
+                      </Label>
+                  </Button>
+                </div>
             </div>
           </div>
            <div className="grid grid-cols-4 items-center gap-4">

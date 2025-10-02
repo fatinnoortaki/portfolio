@@ -76,12 +76,20 @@ export function BioForm() {
             <Label>Profile Photo</Label>
             <div className="flex items-center gap-4">
               <Image src={profilePhotoUrl} alt="Profile Preview" width={80} height={80} className="rounded-full object-cover border" />
-              <Input id="photoUpload" type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
-              <Button asChild variant="outline">
-                <Label htmlFor="photoUpload" className="cursor-pointer">
-                    <Upload className="mr-2" /> Upload Image
-                </Label>
-              </Button>
+              <div className="flex-grow space-y-2">
+                <Input 
+                    type="url"
+                    placeholder="Or paste image URL"
+                    value={profilePhotoUrl.startsWith('data:') ? '' : profilePhotoUrl}
+                    onChange={(e) => setProfilePhotoUrl(e.target.value)}
+                />
+                <Input id="photoUpload" type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+                <Button asChild variant="outline">
+                  <Label htmlFor="photoUpload" className="cursor-pointer">
+                      <Upload className="mr-2" /> Upload Image
+                  </Label>
+                </Button>
+              </div>
             </div>
         </div>
         <div className="space-y-2">
