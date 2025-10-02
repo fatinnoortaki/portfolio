@@ -135,7 +135,7 @@ export function ProjectDialog({ project, open, onOpenChange, onSave }: ProjectDi
                   <Input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                   <Button asChild variant="outline">
                       <Label htmlFor="imageUpload" className="cursor-pointer">
-                          <Upload className="mr-2" /> Upload
+                          <Upload className="mr-2 h-4 w-4" /> Upload
                       </Label>
                   </Button>
                 </div>
