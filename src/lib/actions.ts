@@ -53,9 +53,8 @@ export async function toggleAdminRole(uid: string, isAdmin: boolean) {
 
 export async function saveBio(bio: string, funFacts: FunFact[], photoUrl: string) {
     try {
-        // Prevent saving large base64 strings
         if (photoUrl && photoUrl.startsWith('data:image')) {
-            return { success: false, message: 'Image upload is not supported. Please paste a URL instead as the image file is too large to save directly.' };
+            return { success: false, message: 'Image upload by file is not supported. Please use a URL from an image hosting service.' };
         }
         await adminDb.collection('about').doc('main').set({ bio, funFacts, photoUrl }, { merge: true });
         revalidatePath('/');
@@ -63,7 +62,8 @@ export async function saveBio(bio: string, funFacts: FunFact[], photoUrl: string
         return { success: true, message: 'Bio updated successfully.' };
     } catch (error) {
         console.error('Error saving bio:', error);
-        return { success: false, message: 'Failed to save bio. The data might be too large for the database.' };
+        const message = error instanceof Error ? error.message : 'An unknown error occurred.';
+        return { success: false, message: `Failed to save bio: ${message}` };
     }
 }
 
