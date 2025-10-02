@@ -9,7 +9,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
-import { setDoc, doc } from 'firebase/firestore';
+import { setDoc, doc, getDocs, collection } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -58,18 +58,32 @@ export function LoginForm() {
     setAuthError(null);
     try {
       if (isSignUp) {
+        // Check if any admin users exist
+        const adminRolesQuery = await getDocs(collection(firestore, 'roles_admin'));
+        const hasAdmins = !adminRolesQuery.empty;
+        
         const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
         const user = userCredential.user;
+        
         // Also save user info to Firestore
         await setDoc(doc(firestore, 'users', user.uid), {
           uid: user.uid,
           email: user.email,
         });
 
-        toast({
-          title: 'Success!',
-          description: 'Your account has been created. You are now logged in.',
-        });
+        // If no admins exist, make this new user an admin
+        if (!hasAdmins) {
+          await setDoc(doc(firestore, 'roles_admin', user.uid), {});
+           toast({
+            title: 'Admin Account Created!',
+            description: 'You have been made the first administrator.',
+          });
+        } else {
+           toast({
+            title: 'Success!',
+            description: 'Your account has been created.',
+          });
+        }
       } else {
         await signInWithEmailAndPassword(auth, data.email, data.password);
         toast({
@@ -79,6 +93,10 @@ export function LoginForm() {
       }
       router.push('/admin');
     } catch (error: any) {
+      // Temporarily sign out the user if the rest of the logic fails
+      if (isSignUp) {
+          await auth.signOut();
+      }
       setAuthError(error.message);
       toast({
         variant: 'destructive',
