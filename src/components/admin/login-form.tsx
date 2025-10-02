@@ -4,12 +4,11 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth } from '@/firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
-import { setDoc, doc, getDocs, collection } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -40,7 +39,6 @@ export function LoginForm() {
   const [authError, setAuthError] = useState<string | null>(null);
   const { toast } = useToast();
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
 
   const {
