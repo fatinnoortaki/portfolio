@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import Image from 'next/image';
 import { portfolioData } from '@/lib/data';
 import { generateBioContent } from '@/ai/flows/generate-bio-content';
 import { saveBio } from '@/lib/actions';
@@ -9,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Upload } from 'lucide-react';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 
@@ -21,6 +22,7 @@ export function BioForm() {
   const [bio, setBio] = useState(portfolioData.bio);
   const [userInput, setUserInput] = useState('');
   const [funFacts, setFunFacts] = useState(portfolioData.funFacts);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState(portfolioData.profilePhotoUrl);
 
   const handleGenerateBio = () => {
     startTransition(async () => {
@@ -40,13 +42,26 @@ export function BioForm() {
 
   const handleSaveChanges = () => {
     startSavingTransition(async () => {
-      const result = await saveBio(bio, funFacts);
+      // This is a mock save. In a real app, you'd upload the file if it's a data URL,
+      // get back a permanent URL, and save that to the database.
+      const result = await saveBio(bio, funFacts, profilePhotoUrl);
       if (result.success) {
         toast({ title: 'Success', description: result.message });
       } else {
         toast({ variant: 'destructive', title: 'Error', description: result.message });
       }
     });
+  };
+  
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePhotoUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
 
@@ -57,9 +72,17 @@ export function BioForm() {
         <CardDescription>Manage your biography, photo, and fun facts.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="space-y-2">
-            <Label>Profile Photo URL</Label>
-            <Input defaultValue={portfolioData.profilePhotoUrl} />
+         <div className="space-y-2">
+            <Label>Profile Photo</Label>
+            <div className="flex items-center gap-4">
+              <Image src={profilePhotoUrl} alt="Profile Preview" width={80} height={80} className="rounded-full object-cover border" />
+              <Input id="photoUpload" type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+              <Button asChild variant="outline">
+                <Label htmlFor="photoUpload" className="cursor-pointer">
+                    <Upload className="mr-2" /> Upload Image
+                </Label>
+              </Button>
+            </div>
         </div>
         <div className="space-y-2">
           <Label htmlFor="bio">Your Bio</Label>

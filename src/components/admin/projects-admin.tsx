@@ -1,19 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import Image from 'next/image';
 import { portfolioData } from '@/lib/data';
+import { saveProjects } from '@/lib/actions';
 import type { Project } from '@/lib/definitions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlusCircle, MoreHorizontal, Trash, Edit } from 'lucide-react';
+import { PlusCircle, MoreHorizontal, Trash, Edit, Save } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ProjectDialog } from './project-dialog';
+import { useToast } from '@/hooks/use-toast';
+
 
 export function ProjectsAdmin() {
   const [projects, setProjects] = useState<Project[]>(portfolioData.projects);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isSaving, startSavingTransition] = useTransition();
+  const { toast } = useToast();
 
   const handleAddNew = () => {
     setSelectedProject(null);
@@ -29,27 +34,43 @@ export function ProjectsAdmin() {
     setProjects(projects.filter(p => p.id !== id));
   };
   
-  const handleSave = (project: Project) => {
+  const handleSaveDialog = (project: Project) => {
     if (project.id) {
       setProjects(projects.map(p => p.id === project.id ? project : p));
     } else {
       const newProject: Project = { 
         ...project, 
         id: `proj-${Date.now()}`,
-        imageUrl: project.imageUrl || "https://picsum.photos/seed/project5/600/400",
-        imageHint: project.imageHint || "team collaboration",
+        imageUrl: project.imageUrl || "https://picsum.photos/seed/new-project/600/400",
+        imageHint: project.imageHint || "new project",
       };
       setProjects([...projects, newProject]);
     }
   };
 
+  const handleSaveAll = () => {
+    startSavingTransition(async () => {
+        const result = await saveProjects(projects);
+        if (result.success) {
+            toast({ title: 'Success!', description: 'Projects saved successfully.' });
+        } else {
+            toast({ variant: 'destructive', title: 'Error', description: result.message });
+        }
+    });
+  };
+
   return (
     <>
-      <div className="flex items-center">
-        <div className="ml-auto flex items-center gap-2">
-          <Button size="sm" onClick={handleAddNew}>
+      <div className="flex items-center justify-between">
+        <div/>
+        <div className="flex items-center gap-2">
+           <Button size="sm" variant="outline" onClick={handleAddNew}>
             <PlusCircle className="h-4 w-4 mr-2" />
-            Add Project
+            Add New Project
+          </Button>
+          <Button size="sm" onClick={handleSaveAll} disabled={isSaving}>
+            <Save className="h-4 w-4 mr-2" />
+            {isSaving ? 'Saving...' : 'Save All Changes'}
           </Button>
         </div>
       </div>
@@ -84,7 +105,7 @@ export function ProjectsAdmin() {
                   </DropdownMenu>
                 </CardHeader>
                 <CardContent>
-                  <Image
+                   <Image
                     src={project.imageUrl || "https://picsum.photos/seed/placeholder/600/400"}
                     alt={project.title || "Project image"}
                     width={300}
@@ -102,7 +123,7 @@ export function ProjectsAdmin() {
         open={isDialogOpen} 
         onOpenChange={setIsDialogOpen} 
         project={selectedProject} 
-        onSave={handleSave}
+        onSave={handleSaveDialog}
       />
     </>
   );

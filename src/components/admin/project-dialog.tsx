@@ -1,5 +1,6 @@
 'use client';
 import { useState, useTransition, useEffect } from 'react';
+import Image from 'next/image';
 import { generateProjectDescription } from '@/ai/flows/generate-project-description';
 import type { Project } from '@/lib/definitions';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Upload } from 'lucide-react';
 
 interface ProjectDialogProps {
   project?: Project | null;
@@ -48,6 +49,17 @@ export function ProjectDialog({ project, open, onOpenChange, onSave }: ProjectDi
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, imageUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleGenerateDescription = () => {
@@ -109,8 +121,16 @@ export function ProjectDialog({ project, open, onOpenChange, onSave }: ProjectDi
             <Input id="techStack" name="techStack" placeholder="Comma-separated, e.g., Next.js, TypeScript" value={Array.isArray(formData.techStack) ? formData.techStack.join(', ') : ''} onChange={(e) => setFormData(prev => ({...prev, techStack: e.target.value.split(',').map(s => s.trim())}))} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="imageUrl" className="text-right">Image URL</Label>
-            <Input id="imageUrl" name="imageUrl" value={formData.imageUrl || ''} onChange={handleInputChange} className="col-span-3" />
+            <Label className="text-right">Image</Label>
+            <div className="col-span-3 flex items-center gap-4">
+                {formData.imageUrl && <Image src={formData.imageUrl} alt="Project preview" width={80} height={60} className="rounded-md object-cover" />}
+                <Input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                <Button asChild variant="outline">
+                    <Label htmlFor="imageUpload" className="cursor-pointer">
+                        <Upload className="mr-2" /> Upload
+                    </Label>
+                </Button>
+            </div>
           </div>
            <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="imageHint" className="text-right">Image Hint</Label>
