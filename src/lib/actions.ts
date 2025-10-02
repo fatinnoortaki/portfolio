@@ -53,16 +53,13 @@ export async function toggleAdminRole(uid: string, isAdmin: boolean) {
 
 export async function saveBio(bio: string, funFacts: FunFact[], photoUrl: string) {
     try {
-        if (photoUrl && photoUrl.startsWith('data:image')) {
-            return { success: false, message: 'Image upload by file is not supported. Please use a URL from an image hosting service.' };
-        }
         await adminDb.collection('about').doc('main').set({ bio, funFacts, photoUrl }, { merge: true });
         revalidatePath('/');
         revalidatePath('/admin');
         return { success: true, message: 'Bio updated successfully.' };
-    } catch (error) {
-        console.error('Error saving bio:', error);
-        const message = error instanceof Error ? error.message : 'An unknown error occurred.';
+    } catch (error: any) {
+        console.error('Full error object in saveBio:', error);
+        const message = error.message || 'An unknown error occurred.';
         return { success: false, message: `Failed to save bio: ${message}` };
     }
 }
