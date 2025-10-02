@@ -8,7 +8,6 @@ import { useAuth, useFirestore } from '@/firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -25,18 +24,6 @@ import { Label } from '@/components/ui/label';
 import { LogIn } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -54,8 +41,6 @@ export function LoginForm() {
   const auth = useAuth();
   const firestore = useFirestore();
   const router = useRouter();
-  const [resetEmail, setResetEmail] = useState('');
-
 
   const {
     register,
@@ -64,19 +49,6 @@ export function LoginForm() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   });
-  
-  const handlePasswordReset = async () => {
-    if (!resetEmail) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Please enter your email address.' });
-      return;
-    }
-    try {
-      await sendPasswordResetEmail(auth, resetEmail);
-      toast({ title: 'Success', description: 'Password reset email sent. Please check your inbox.' });
-    } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Error', description: error.message });
-    }
-  };
 
   const handleAuthAction = async (
     data: LoginFormValues,
@@ -160,35 +132,6 @@ export function LoginForm() {
             </form>
           </TabsContent>
         </Tabs>
-        <div className="mt-4 text-center text-sm">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="link" className="p-0 h-auto">Forgot Password?</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Reset Your Password</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Enter your email address below and we'll send you a link to reset your password.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <div className="grid gap-2">
-                <Label htmlFor="reset-email">Email</Label>
-                <Input
-                  id="reset-email"
-                  type="email"
-                  placeholder="admin@example.com"
-                  value={resetEmail}
-                  onChange={(e) => setResetEmail(e.target.value)}
-                />
-              </div>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handlePasswordReset}>Send Reset Link</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
         {authError && (
           <p className="text-sm font-medium text-destructive mt-4 text-center">
             {authError}

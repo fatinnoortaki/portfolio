@@ -32,7 +32,7 @@ export function Footer() {
             );
           })}
            <Button asChild variant="outline" size="sm">
-            <Link href="/login">
+            <Link href="/admin">
               <LogIn className="mr-2 h-4 w-4" />
               Admin Login
             </Link>
