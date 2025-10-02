@@ -2,11 +2,9 @@
 
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
-
-// This is a mock import. In a real app, you'd get the admin app instance.
-import { getAdminApp } from '@/firebase/server'; 
-import { doc, setDoc, deleteDoc } from 'firebase/firestore';
-
+import { getAdminApp } from '@/firebase/server';
+import { doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
+import type { FunFact, Project, Experience, Education } from './definitions';
 
 const contactSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -39,15 +37,19 @@ export async function submitContactForm(
       message: 'Validation failed. Please check your input.',
     };
   }
-  
-  // Here you would typically save the data to a database or send an email.
-  // For this example, we'll just log it to the console.
-  console.log('New contact form submission:');
-  console.log(validatedFields.data);
 
-  // In a real app, you'd likely want to append this message to a list
-  // For this demo, we'll just return a success message
-  return { message: 'Thank you for your message! I will get back to you soon.' };
+  try {
+    const { firestore } = getAdminApp();
+    const messageId = `msg-${Date.now()}`;
+    await setDoc(doc(firestore, 'contactMessages', messageId), {
+      ...validatedFields.data,
+      sentAt: new Date(),
+    });
+    revalidatePath('/admin');
+    return { message: 'Thank you for your message! I will get back to you soon.' };
+  } catch (error) {
+    return { message: 'Failed to send message.' };
+  }
 }
 
 export async function toggleAdminRole(uid: string, isAdmin: boolean) {
@@ -56,10 +58,8 @@ export async function toggleAdminRole(uid: string, isAdmin: boolean) {
     const roleRef = doc(firestore, 'roles_admin', uid);
 
     if (isAdmin) {
-      // Add the user to the admin roles
       await setDoc(roleRef, {});
     } else {
-      // Remove the user from admin roles
       await deleteDoc(roleRef);
     }
     revalidatePath('/admin');
@@ -69,4 +69,63 @@ export async function toggleAdminRole(uid: string, isAdmin: boolean) {
     const message = error instanceof Error ? error.message : 'An unknown error occurred.';
     return { success: false, message };
   }
+}
+
+export async function saveBio(bio: string, funFacts: FunFact[], photoUrl: string) {
+    try {
+        const { firestore } = getAdminApp();
+        const aboutRef = doc(firestore, 'about', 'main');
+        await setDoc(aboutRef, { bio, funFacts, photoUrl }, { merge: true });
+        revalidatePath('/');
+        revalidatePath('/admin');
+        return { success: true, message: 'Bio updated successfully.' };
+    } catch (error) {
+        console.error('Error saving bio:', error);
+        return { success: false, message: 'Failed to save bio.' };
+    }
+}
+
+
+export async function saveProjects(projects: Project[]) {
+    try {
+        const { firestore } = getAdminApp();
+        const batch = writeBatch(firestore);
+        projects.forEach(project => {
+            const projectRef = doc(firestore, 'projects', project.id);
+            batch.set(projectRef, project);
+        });
+        await batch.commit();
+
+        revalidatePath('/');
+        revalidatePath('/admin');
+        return { success: true, message: 'Projects saved successfully.' };
+    } catch (error) {
+        console.error('Error saving projects:', error);
+        return { success: false, message: 'Failed to save projects.' };
+    }
+}
+
+
+export async function saveResume(experiences: Experience[], educations: Education[]) {
+    try {
+        const { firestore } = getAdminApp();
+        const batch = writeBatch(firestore);
+
+        experiences.forEach(exp => {
+            const docRef = doc(firestore, 'resumeEntries', exp.id);
+            batch.set(docRef, {...exp, type: 'experience'});
+        });
+        educations.forEach(edu => {
+            const docRef = doc(firestore, 'resumeEntries', edu.id);
+            batch.set(docRef, {...edu, type: 'education'});
+        });
+        
+        await batch.commit();
+        revalidatePath('/');
+        revalidatePath('/admin');
+        return { success: true, message: 'Resume saved successfully.' };
+    } catch (error) {
+        console.error('Error saving resume:', error);
+        return { success: false, message: 'Failed to save resume.' };
+    }
 }
