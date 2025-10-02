@@ -12,6 +12,14 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
 
+function LogoutButton({ onClick }: { onClick: () => void }) {
+  return (
+    <Button onClick={onClick} variant="secondary" className="mt-4">
+      Logout
+    </Button>
+  );
+}
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
@@ -95,9 +103,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <AlertDescription>
                     You are not authorized to access this page. Please contact the site administrator if you believe this is an error.
                 </AlertDescription>
-                <Button onClick={handleLogout} variant="secondary" className="mt-4">
-                    Logout
-                </Button>
+                <LogoutButton onClick={handleLogout} />
             </Alert>
         </div>
     );
