@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { getAdminApp } from '@/firebase/server';
-import { doc, setDoc, deleteDoc, writeBatch, getDocs, collection } from 'firebase/firestore';
+import { doc, setDoc, deleteDoc, writeBatch, getDocs, collection, getCountFromServer } from 'firebase/firestore';
 import type { FunFact, Project, Experience, Education } from './definitions';
 
 const contactSchema = z.object({
@@ -134,11 +134,10 @@ export async function createUser(uid: string, email: string | null) {
   try {
     const { firestore } = getAdminApp();
 
-    // Check if there are any admins
-    const adminsSnapshot = await getDocs(collection(firestore, 'roles_admin'));
-    const isFirstAdmin = adminsSnapshot.empty;
+    const adminsCollection = collection(firestore, 'roles_admin');
+    const adminsSnapshot = await getCountFromServer(adminsCollection);
+    const isFirstAdmin = adminsSnapshot.data().count === 0;
 
-    // Create the user document
     await setDoc(doc(firestore, 'users', uid), {
       uid: uid,
       email: email,
@@ -146,12 +145,11 @@ export async function createUser(uid: string, email: string | null) {
 
     let message = 'Account created successfully.';
     if (isFirstAdmin) {
-      // If no admins exist, make this user the first admin
       await setDoc(doc(firestore, 'roles_admin', uid), {});
       message = 'Admin account created! You have been made the first administrator.';
     }
     
-    revalidatePath('/admin/users'); // Revalidate the user management page
+    revalidatePath('/admin/users');
     return { success: true, isAdmin: isFirstAdmin, message };
 
   } catch (error) {
