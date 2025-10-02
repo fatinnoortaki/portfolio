@@ -2,14 +2,14 @@
 
 import { revalidatePath } from 'next/cache';
 import { adminDb } from '@/firebase/server';
-import type { ContactFormState, FunFact, Project, Experience, Education } from './definitions';
 import { contactSchema } from './definitions';
+import type { ContactFormState, FunFact, Project, Experience, Education } from './definitions';
 
 
 export async function submitContactForm(
   prevState: ContactFormState,
   formData: FormData
-) {
+): Promise<ContactFormState> {
   const validatedFields = contactSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
@@ -24,8 +24,7 @@ export async function submitContactForm(
   }
 
   try {
-    const messageId = `msg-${Date.now()}`;
-    await adminDb.collection('contactMessages').doc(messageId).set({
+    await adminDb.collection('contactMessages').add({
       ...validatedFields.data,
       sentAt: new Date(),
     });
@@ -71,11 +70,9 @@ export async function saveProjects(projects: Project[]) {
     try {
         const batch = adminDb.batch();
         
-        // First delete all existing projects to handle deletions
         const snapshot = await adminDb.collection('projects').get();
         snapshot.docs.forEach(doc => batch.delete(doc.ref));
 
-        // Then add all the current projects
         projects.forEach(project => {
             const projectRef = adminDb.collection('projects').doc(project.id);
             batch.set(projectRef, project);
@@ -127,7 +124,6 @@ export async function createUser(uid: string, email: string | null) {
     const adminRolesSnapshot = await adminDb.collection('roles_admin').limit(1).get();
     
     if (adminRolesSnapshot.empty) {
-        // This is the first user, make them an admin.
         const userBatch = adminDb.batch();
         const userRef = adminDb.collection('users').doc(uid);
         userBatch.set(userRef, { uid, email });
@@ -139,7 +135,6 @@ export async function createUser(uid: string, email: string | null) {
         revalidatePath('/admin/users');
         return { success: true, isAdmin: true, message: 'Admin account created! You have been made the first administrator.' };
     } else {
-        // Not the first user, just create a user record.
         await adminDb.collection('users').doc(uid).set({ uid, email });
         revalidatePath('/admin/users');
         return { success: true, isAdmin: false, message: 'User account created successfully.' };

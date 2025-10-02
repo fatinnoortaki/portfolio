@@ -2,7 +2,6 @@
 import React, { useEffect, useRef, useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { submitContactForm } from '@/lib/actions';
-import type { ContactFormState } from '@/lib/definitions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Send } from 'lucide-react';
+import type { ContactFormState } from '@/lib/definitions';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
