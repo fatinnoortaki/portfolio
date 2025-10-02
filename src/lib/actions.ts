@@ -3,7 +3,6 @@
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { getAdminApp } from '@/firebase/server';
-import { doc, setDoc, deleteDoc, writeBatch, getDocs, collection, getCountFromServer } from 'firebase/firestore';
 import type { FunFact, Project, Experience, Education } from './definitions';
 
 const contactSchema = z.object({
@@ -41,7 +40,7 @@ export async function submitContactForm(
   try {
     const { firestore } = getAdminApp();
     const messageId = `msg-${Date.now()}`;
-    await setDoc(doc(firestore, 'contactMessages', messageId), {
+    await firestore.collection('contactMessages').doc(messageId).set({
       ...validatedFields.data,
       sentAt: new Date(),
     });
@@ -55,12 +54,12 @@ export async function submitContactForm(
 export async function toggleAdminRole(uid: string, isAdmin: boolean) {
   try {
     const { firestore } = getAdminApp();
-    const roleRef = doc(firestore, 'roles_admin', uid);
+    const roleRef = firestore.collection('roles_admin').doc(uid);
 
     if (isAdmin) {
-      await setDoc(roleRef, {});
+      await roleRef.set({});
     } else {
-      await deleteDoc(roleRef);
+      await roleRef.delete();
     }
     revalidatePath('/admin');
     return { success: true, message: 'User role updated.' };
@@ -74,8 +73,7 @@ export async function toggleAdminRole(uid: string, isAdmin: boolean) {
 export async function saveBio(bio: string, funFacts: FunFact[], photoUrl: string) {
     try {
         const { firestore } = getAdminApp();
-        const aboutRef = doc(firestore, 'about', 'main');
-        await setDoc(aboutRef, { bio, funFacts, photoUrl }, { merge: true });
+        await firestore.collection('about').doc('main').set({ bio, funFacts, photoUrl }, { merge: true });
         revalidatePath('/');
         revalidatePath('/admin');
         return { success: true, message: 'Bio updated successfully.' };
@@ -89,9 +87,9 @@ export async function saveBio(bio: string, funFacts: FunFact[], photoUrl: string
 export async function saveProjects(projects: Project[]) {
     try {
         const { firestore } = getAdminApp();
-        const batch = writeBatch(firestore);
+        const batch = firestore.batch();
         projects.forEach(project => {
-            const projectRef = doc(firestore, 'projects', project.id);
+            const projectRef = firestore.collection('projects').doc(project.id);
             batch.set(projectRef, project);
         });
         await batch.commit();
@@ -109,14 +107,14 @@ export async function saveProjects(projects: Project[]) {
 export async function saveResume(experiences: Experience[], educations: Education[]) {
     try {
         const { firestore } = getAdminApp();
-        const batch = writeBatch(firestore);
+        const batch = firestore.batch();
 
         experiences.forEach(exp => {
-            const docRef = doc(firestore, 'resumeEntries', exp.id);
+            const docRef = firestore.collection('resumeEntries').doc(exp.id);
             batch.set(docRef, {...exp, type: 'experience'});
         });
         educations.forEach(edu => {
-            const docRef = doc(firestore, 'resumeEntries', edu.id);
+            const docRef = firestore.collection('resumeEntries').doc(edu.id);
             batch.set(docRef, {...edu, type: 'education'});
         });
         
@@ -133,26 +131,33 @@ export async function saveResume(experiences: Experience[], educations: Educatio
 export async function createUser(uid: string, email: string | null) {
   try {
     const { firestore } = getAdminApp();
+    
+    // Clear existing users and admins
+    const usersSnapshot = await firestore.collection('users').get();
+    const adminsSnapshot = await firestore.collection('roles_admin').get();
 
-    const adminsCollection = collection(firestore, 'roles_admin');
-    const adminsSnapshot = await getCountFromServer(adminsCollection);
-    const isFirstAdmin = adminsSnapshot.data().count === 0;
+    const batch = firestore.batch();
 
-    await setDoc(doc(firestore, 'users', uid), {
-      uid: uid,
-      email: email,
-    });
+    usersSnapshot.forEach(doc => batch.delete(doc.ref));
+    adminsSnapshot.forEach(doc => batch.delete(doc.ref));
 
-    let message = 'Account created successfully.';
-    if (isFirstAdmin) {
-      await setDoc(doc(firestore, 'roles_admin', uid), {});
-      message = 'Admin account created! You have been made the first administrator.';
-    }
+    await batch.commit();
+
+    // Now create the new user and make them the first admin
+    const userBatch = firestore.batch();
+    const userRef = firestore.collection('users').doc(uid);
+    userBatch.set(userRef, { uid, email });
+
+    const adminRef = firestore.collection('roles_admin').doc(uid);
+    userBatch.set(adminRef, {});
+    
+    await userBatch.commit();
     
     revalidatePath('/admin/users');
-    return { success: true, isAdmin: isFirstAdmin, message };
+    return { success: true, isAdmin: true, message: 'Admin account created! You have been made the first administrator.' };
 
   } catch (error) {
+    console.error('Error creating user:', error);
     const message = error instanceof Error ? error.message : 'An unknown error occurred.';
     return { success: false, message };
   }

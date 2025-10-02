@@ -1,3 +1,5 @@
+'use server';
+
 import { initializeApp, getApps, getApp, cert, type App } from 'firebase-admin/app';
 import { getAuth, type Auth } from 'firebase-admin/auth';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
@@ -19,6 +21,8 @@ export function getAdminApp(): AdminApp {
     };
   }
 
+  // When running in a Google Cloud environment, the SDK can automatically
+  // discover the service account credentials.
   const app = initializeApp();
   
   return {
