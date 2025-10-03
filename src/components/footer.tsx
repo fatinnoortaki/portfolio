@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { portfolioData } from '@/lib/data';
 import { Icons } from './icons';
 import { Button } from './ui/button';
-import { LogIn } from 'lucide-react';
 
 export function Footer() {
   const socialIconMap = {
@@ -31,12 +30,6 @@ export function Footer() {
               </Button>
             );
           })}
-           <Button asChild variant="outline" size="sm">
-            <Link href="/admin">
-              <LogIn className="mr-2 h-4 w-4" />
-              Admin Login
-            </Link>
-          </Button>
         </div>
       </div>
     </footer>

@@ -62,6 +62,8 @@ export type ContactMessage = {
 
 export type PortfolioData = {
   name: string;
+  logo: string;
+  favicon: string;
   tagline: string;
   bio: string;
   profilePhotoUrl: string;
@@ -73,10 +75,3 @@ export type PortfolioData = {
   educations: Education[];
   cvUrl: string;
 };
-
-export type UserProfile = {
-    uid: string;
-    email: string | null;
-    displayName?: string | null;
-    photoURL?: string | null;
-}
