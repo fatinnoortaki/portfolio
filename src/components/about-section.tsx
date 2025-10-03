@@ -20,7 +20,7 @@ export function AboutSection() {
     <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
       <div className="container px-4 md:px-6">
         <div className="grid gap-10 lg:grid-cols-2">
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center row-start-1 lg:row-start-auto">
             <div className="relative w-64 h-64 md:w-80 md:h-80">
               <Image
                 src={profilePhotoUrl}
