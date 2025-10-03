@@ -71,17 +71,10 @@
   "experiences": [
     {
       "id": "exp1",
-      "company": "AgriTech Innovations",
-      "role": "Data Science Intern",
-      "period": "Summer 2023",
-      "description": "Developed and trained machine learning models for precision agriculture applications, improving crop yield forecasts by 15%."
-    },
-    {
-      "id": "exp2",
-      "company": "BAU Research Lab",
-      "role": "Research Assistant",
-      "period": "2022 - Present",
-      "description": "Assisting in research projects focused on soil health and sustainable farming practices. Published a paper on compost analysis."
+      "company": "BAU Solidarity Society",
+      "role": "Coordinator",
+      "period": "July 2025",
+      "description": "Coordinated/Organized a program 'JULY REMINISCENCE' of BAU Solidary Society"
     }
   ],
   "educations": [
