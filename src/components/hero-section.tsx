@@ -11,19 +11,19 @@ export function HeroSection() {
   const featuredProjects = portfolioData.projects.filter(p => p.featured);
 
   return (
-    <section id="hero" className="w-full py-20 md:py-24 lg:py-32 border-b">
+    <section id="hero" className="w-full border-b flex items-center min-h-screen py-20 md:py-24 lg:py-32">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center space-y-12">
           <div className="flex flex-col justify-center space-y-4 text-center">
             <div className="space-y-2">
-              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary/90">
+              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline text-primary/90 mb-4">
                 {portfolioData.name}
               </h1>
               <p className="max-w-[700px] mx-auto text-foreground/80 md:text-xl">
                 {portfolioData.tagline}
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Button asChild size="lg">
                 <Link href="#socials">
                   Get in Touch
