@@ -6,6 +6,7 @@ import { ArrowRight, ExternalLink } from 'lucide-react';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { Project } from '@/lib/definitions';
+import { Typewriter } from './typewriter';
 
 export function HeroSection() {
   const featuredProjects = portfolioData.projects.filter(p => p.featured);
@@ -20,7 +21,7 @@ export function HeroSection() {
                 {portfolioData.name}
               </h1>
               <p className="max-w-[700px] mx-auto text-foreground/80 md:text-xl">
-                {portfolioData.tagline}
+                <Typewriter text={portfolioData.tagline} className="max-w-[700px] mx-auto text-foreground/80 md:text-xl" />
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
