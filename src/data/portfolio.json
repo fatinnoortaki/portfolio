@@ -4,7 +4,7 @@
   "favicon": "/media/favicon.png",
   "tagline": "Agriculture Student & AgriTech Enthusiast",
   "bio": "I'm a student from Bangladesh Agricultural University, exploring sustainable farming, crop science, and innovative agricultural technologies. I love learning, experimenting, and sharing knowledge, and I'm passionate about applying data science and ML in the agricultural field (AgriTech).",
-  "profilePhotoUrl": "https://images.unsplash.com/photo-1593104547489-5cfb3839a3b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MHx8fHwxNzI5MDI4MTI2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+  "profilePhotoUrl": "https://i.imgur.com/clNf1Tc.jpeg",
   "profilePhotoHint": "student portrait",
   "funFacts": [
     { "icon": "🔬", "text": "Conducting research on hydroponics and vertical farming." },
@@ -13,7 +13,7 @@
     { "icon": "📈", "text": "Analyzing agricultural data to optimize crop yields." }
   ],
   "socialLinks": [
-    { "name": "GitHub", "url": "https://github.com/your-username" },
+    { "name": "GitHub", "url": "https://github.com/fatinnoortaki" },
     { "name": "LinkedIn", "url": "https://linkedin.com/in/your-username" },
     { "name": "Twitter", "url": "https://twitter.com/your-username" }
   ],
@@ -23,7 +23,7 @@
       "title": "Crop Yield Prediction",
       "description": "A machine learning model to predict crop yields based on weather patterns and soil data.",
       "techStack": ["Python", "TensorFlow", "Scikit-learn"],
-      "imageUrl": "https://images.unsplash.com/photo-1542379361-1e4381273952?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjcm9wJTIweWllbGR8ZW58MHx8fHwxNzI5MDI4MjE0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://www.labellerr.com/blog/content/images/2024/11/ml-crop-yield-prediction-tutorial.webp",
       "imageHint": "crop yield",
       "liveUrl": "#",
       "repoUrl": "#",
@@ -34,7 +34,7 @@
       "title": "Smart Irrigation System",
       "description": "An IoT-based system that automates irrigation based on real-time soil moisture levels.",
       "techStack": ["Arduino", "React", "Firebase"],
-      "imageUrl": "https://images.unsplash.com/photo-1624555130222-a169e3834346?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWFydCUyMGlyaWdhdGlvbnxlbnwwfHx8fDE3MjkwMjgyMzR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://docs.arduino.cc/static/dd8cdd43964127eb5aceddfa5ef25578/a6d36/dashboard-cel.png",
       "imageHint": "smart irrigation",
       "liveUrl": "#",
       "repoUrl": "#",
@@ -45,7 +45,7 @@
       "title": "Plant Disease Identifier",
       "description": "A mobile app that uses computer vision to identify plant diseases from photos.",
       "techStack": ["Flutter", "TensorFlow Lite", "Firebase"],
-      "imageUrl": "https://images.unsplash.com/photo-1615828247383-a75b48108c4a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwbGFudCUyMGRpc2Vhc2V8ZW58MHx8fHwxNzI5MDI4MjU4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://pub.mdpi-res.com/agriculture/agriculture-12-02014/article_deploy/html/images/agriculture-12-02014-g001.png",
       "imageHint": "plant disease",
       "liveUrl": "#",
       "repoUrl": "#"
@@ -55,7 +55,7 @@
       "title": "Farm-to-Table Marketplace",
       "description": "An e-commerce platform connecting local farmers directly with consumers.",
       "techStack": ["Next.js", "Stripe", "PostgreSQL"],
-      "imageUrl": "https://images.unsplash.com/photo-1591135364402-534720073e04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmYXJtZXJzJTIwbWFya2V0fGVufDB8fHx8MTcyOTAyODMwMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.squarespace-cdn.com/content/v1/62e7a92f066fa3730dcd4604/4e7e9112-a354-42a2-945a-db64c5ecc77e/v2-8wigr-mxmgp.jpg",
       "imageHint": "farmers market",
       "liveUrl": "#",
       "repoUrl": "#"
@@ -82,13 +82,18 @@
       "id": "edu1",
       "institution": "Bangladesh Agricultural University",
       "degree": "B.Sc. in Agriculture",
-      "period": "2020 - 2024"
+      "period": "2024-Present"
     },
     {
       "id": "edu2",
-      "institution": "Online Learning Platforms",
-      "degree": "Certifications in Data Science & ML",
-      "period": "Ongoing"
+      "institution": "Sirajganj Collectorate College",
+      "degree": "Higher Secondary Certificate",
+      "period": "2022-2023"
+    }, {
+      "id": "edu3",
+      "institution": "Jewel's Oxford Int'l School & College",
+      "degree": "International General Certificate for Secondary Education",
+      "period": "2010-2021"
     }
   ],
   "cvUrl": "/Fatin_Noor_Taki_CV.pdf"
