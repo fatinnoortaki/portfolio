@@ -19,18 +19,16 @@ export function AboutSection() {
   return (
     <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
       <div className="container px-4 md:px-6">
-        <div className="grid items-center justify-center gap-10 lg:grid-cols-2">
+        <div className="grid items-center justify-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="flex justify-center">
-            <div className="relative w-64 h-64 md:w-80 md:h-80">
-              <Image
-                src={profilePhotoUrl}
-                alt="Profile Photo"
-                width={400}
-                height={400}
-                className="rounded-full object-cover border-4 border-background shadow-lg"
-                data-ai-hint={profilePhotoHint}
-              />
-            </div>
+            <Image
+              src={profilePhotoUrl}
+              alt="Profile Photo"
+              width={320}
+              height={320}
+              className="rounded-full object-cover border-4 border-background shadow-lg h-64 w-64 md:h-80 md:w-80"
+              data-ai-hint={profilePhotoHint}
+            />
           </div>
           <div className="space-y-8">
             <div className="space-y-2">
