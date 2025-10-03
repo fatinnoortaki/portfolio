@@ -19,7 +19,7 @@ export function QuoteSection() {
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full max-w-2xl mx-auto my-8">
         <blockquote className="relative p-4 text-lg italic border-l-4 bg-muted text-center rounded-r-lg">
             <QuoteIcon className="absolute top-2 left-2 h-6 w-6 text-primary/30 transform -scale-x-100" />
             <p className="mb-2 px-4">&ldquo;{quote.text}&rdquo;</p>
