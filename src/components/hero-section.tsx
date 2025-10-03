@@ -25,7 +25,7 @@ export function HeroSection() {
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button asChild size="lg">
-                <Link href="#contact">
+                <Link href="#socials">
                   Get in Touch
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
