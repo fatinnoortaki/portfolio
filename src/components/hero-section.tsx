@@ -7,6 +7,7 @@ import { Card, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { Project } from '@/lib/definitions';
 import { Typewriter } from './typewriter';
+import { QuoteSection } from './quote-section';
 
 export function HeroSection() {
   const featuredProjects = portfolioData.projects.filter(p => p.featured);
@@ -39,6 +40,8 @@ export function HeroSection() {
             </div>
           </div>
           
+          <QuoteSection />
+
           <div className="w-full max-w-5xl">
             <h3 className="text-2xl font-bold tracking-tight text-center mb-6 font-headline">Featured Projects</h3>
             <div className="grid gap-6 md:grid-cols-2">

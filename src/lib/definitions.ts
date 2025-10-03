@@ -30,6 +30,11 @@ export type FunFact = {
   text: string;
 };
 
+export type Quote = {
+  text: string;
+  author: string;
+};
+
 export type Project = {
   id: string;
   title: string;
@@ -74,6 +79,7 @@ export type PortfolioData = {
   profilePhotoUrl: string;
   profilePhotoHint: string;
   funFacts: FunFact[];
+  quotes: Quote[];
   socialLinks: SocialLink[];
   connectLinks: ConnectLink[];
   projects: Project[];

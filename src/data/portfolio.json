@@ -1,7 +1,7 @@
 {
   "name": "Fatin Noor Taki",
   "logo": "/media/favicon.png",
-  "favicon": "https://fav.farm/%F0%9F%8C%B3",
+  "favicon": "https://fav.farm/%F0%9F%8C%90",
   "tagline": "Agriculture Student & AgriTech Enthusiast",
   "bio": "I'm a student from Bangladesh Agricultural University, exploring sustainable farming, crop science, and innovative agricultural technologies. I love learning, experimenting, and sharing knowledge, and I'm passionate about applying data science and ML in the agricultural field (AgriTech).",
   "profilePhotoUrl": "https://i.imgur.com/clNf1Tc.jpeg",
@@ -11,6 +11,14 @@
     { "icon": "🌱", "text": "Passionate about sustainable agriculture and food security." },
     { "icon": "🤖", "text": "Exploring AI applications for crop disease detection." },
     { "icon": "📈", "text": "Analyzing agricultural data to optimize crop yields." }
+  ],
+  "quotes": [
+    { "text": "The ultimate goal of farming is not the growing of crops, but the cultivation and perfection of human beings.", "author": "Masanobu Fukuoka" },
+    { "text": "Agriculture is our wisest pursuit, because it will in the end contribute most to real wealth, good morals, and happiness.", "author": "Thomas Jefferson" },
+    { "text": "To be a farmer is to be a student forever, for there is no end to the lessons the land can teach.", "author": "Unknown" },
+    { "text": "The farmer has to be an optimist or he wouldn't still be a farmer.", "author": "Will Rogers" },
+    { "text": "We have forgotten how to be good guests, how to walk lightly on the earth as its other creatures do.", "author": "Barbara Ward" },
+    { "text": "The soil is the great connector of lives, the source and destination of all. It is the healer and restorer and resurrector, by which disease passes into health, age into youth, death into life.", "author": "Wendell Berry" }
   ],
   "socialLinks": [
     { "name": "GitHub", "url": "https://github.com/fatinnoortaki" },
