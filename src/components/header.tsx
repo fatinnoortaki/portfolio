@@ -10,7 +10,7 @@ const navLinks = [
   { href: '#about', label: 'About' },
   { href: '#portfolio', label: 'Portfolio' },
   { href: '#resume', label: 'Resume' },
-  { href: '#contact', label: 'Contact' },
+  { href: '#socials', label: 'Connect' },
 ];
 
 export function Header() {

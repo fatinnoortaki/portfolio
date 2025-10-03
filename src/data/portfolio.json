@@ -17,6 +17,13 @@
     { "name": "LinkedIn", "url": "https://linkedin.com/in/your-username" },
     { "name": "Twitter", "url": "https://twitter.com/your-username" }
   ],
+  "connectLinks": [
+    { "name": "Telegram", "url": "https://t.me/FatinNoorTaki" },
+    { "name": "WhatsApp", "url": "https://wa.me/8801770460267" },
+    { "name": "Email", "url": "mailto:fatin.2402255@bau.edu.bd" },
+    { "name": "Facebook", "url": "https://facebook.com/fn.taki" },
+    { "name": "Instagram", "url": "https://instagram.com/fatin_noor_taki" }
+  ],
   "projects": [
     {
       "id": "1",

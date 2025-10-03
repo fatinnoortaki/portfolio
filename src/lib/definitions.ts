@@ -20,6 +20,11 @@ export type SocialLink = {
   url: string;
 };
 
+export type ConnectLink = {
+    name: 'Telegram' | 'WhatsApp' | 'Email' | 'Facebook' | 'Instagram';
+    url: string;
+};
+
 export type FunFact = {
   icon: string;
   text: string;
@@ -70,6 +75,7 @@ export type PortfolioData = {
   profilePhotoHint: string;
   funFacts: FunFact[];
   socialLinks: SocialLink[];
+  connectLinks: ConnectLink[];
   projects: Project[];
   experiences: Experience[];
   educations: Education[];

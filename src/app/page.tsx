@@ -2,7 +2,7 @@ import { HeroSection } from "@/components/hero-section";
 import { AboutSection } from "@/components/about-section";
 import { PortfolioSection } from "@/components/portfolio-section";
 import { ResumeSection } from "@/components/resume-section";
-import { ContactSection } from "@/components/contact-section";
+import { SocialsSection } from "@/components/socials-section";
 
 export default function HomePage() {
   return (
@@ -11,7 +11,7 @@ export default function HomePage() {
       <AboutSection />
       <PortfolioSection />
       <ResumeSection />
-      <ContactSection />
+      <SocialsSection />
     </>
   );
 }
