@@ -39,7 +39,7 @@ export function Header() {
           </nav>
         </div>
         
-        <div className="flex items-center justify-end space-x-2 md:hidden">
+        <div className="flex items-center justify-end md:hidden">
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="ghost" size="icon">
