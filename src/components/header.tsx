@@ -21,7 +21,7 @@ export function Header() {
         <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2">
             <Image src={portfolioData.logo} alt="Logo" width={24} height={24} className="h-6 w-6" />
-            <span className="hidden font-bold sm:inline-block font-headline">{portfolioData.name}</span>
+            <span className="font-bold font-headline">{portfolioData.name}</span>
           </Link>
         </div>
 
@@ -37,39 +37,40 @@ export function Header() {
           ))}
         </nav>
         
-        <div className="flex flex-1 items-center justify-end md:hidden">
-            <Sheet>
-                <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                        <Menu className="h-5 w-5" />
-                        <span className="sr-only">Toggle Menu</span>
-                    </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="pr-0 flex flex-col">
-                    <SheetHeader className="p-6 pb-0">
-                        <SheetTitle className="sr-only">Mobile Navigation</SheetTitle>
-                    </SheetHeader>
-                    <div className="flex flex-col gap-4 p-6 flex-1">
-                    {navLinks.map((link) => (
-                        <Link
-                            key={link.href}
-                            href={link.href}
-                            className="transition-colors hover:text-foreground/80 text-foreground/60 text-lg"
-                        >
-                            {link.label}
-                        </Link>
-                        ))}
-                    </div>
-                    <div className="my-4 h-px w-full bg-border" />
-                    <div className="p-6 pt-0">
-                        <ThemeToggle />
-                    </div>
-                </SheetContent>
-            </Sheet>
-        </div>
-
-        <div className="hidden items-center justify-end space-x-2 md:flex">
-          <ThemeToggle />
+        <div className="flex flex-1 items-center justify-end">
+            <div className="md:hidden">
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                            <Menu className="h-5 w-5" />
+                            <span className="sr-only">Toggle Menu</span>
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent side="right" className="pr-0 flex flex-col">
+                        <SheetHeader className="p-6 pb-0">
+                            <SheetTitle className="sr-only">Mobile Navigation</SheetTitle>
+                        </SheetHeader>
+                        <div className="flex flex-col gap-4 p-6 flex-1">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className="transition-colors hover:text-foreground/80 text-foreground/60 text-lg"
+                            >
+                                {link.label}
+                            </Link>
+                            ))}
+                        </div>
+                        <div className="my-4 h-px w-full bg-border" />
+                        <div className="p-6 pt-0">
+                            <ThemeToggle />
+                        </div>
+                    </SheetContent>
+                </Sheet>
+            </div>
+            <div className="hidden items-center justify-end space-x-2 md:flex">
+                <ThemeToggle />
+            </div>
         </div>
       </div>
     </header>
