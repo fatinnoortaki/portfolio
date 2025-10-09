@@ -48,6 +48,9 @@ export function Header() {
         </nav>
         
         <div className="flex items-center justify-end space-x-2">
+          <div className="hidden items-center justify-end space-x-2 md:flex">
+              <ThemeToggle />
+          </div>
           <div className="md:hidden">
               <Sheet>
                   <SheetTrigger asChild>
@@ -57,8 +60,8 @@ export function Header() {
                       </Button>
                   </SheetTrigger>
                   <SheetContent side="right" className="pr-0 flex flex-col">
-                      <SheetHeader className="p-6 pb-0">
-                          <SheetTitle className="sr-only">Mobile Navigation</SheetTitle>
+                      <SheetHeader className="p-6 pb-0 sr-only">
+                          <SheetTitle>Mobile Navigation</SheetTitle>
                       </SheetHeader>
                       <div className="flex flex-col gap-4 p-6 flex-1">
                       {navLinks.map((link) => (
@@ -80,9 +83,6 @@ export function Header() {
                       </div>
                   </SheetContent>
               </Sheet>
-          </div>
-          <div className="hidden items-center justify-end space-x-2 md:flex">
-              <ThemeToggle />
           </div>
         </div>
       </div>
