@@ -8,8 +8,8 @@ import { ThemeToggle } from './theme-toggle';
 import { portfolioData } from '@/lib/data';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
-import { useActiveSection } from '@/hooks/use-scroll-spy';
 import { cn } from '@/lib/utils';
+import { useActiveSectionContext } from '@/contexts/active-section-context';
 
 const navLinks = [
   { href: '#hero', label: 'Home' },
@@ -20,7 +20,7 @@ const navLinks = [
 ];
 
 export function Header() {
-  const activeId = useActiveSection();
+  const { activeId } = useActiveSectionContext();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -32,23 +32,25 @@ export function Header() {
           </Link>
         </div>
 
-        <nav className="hidden md:flex items-center justify-center gap-8 text-sm flex-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "transition-colors hover:text-foreground/80",
-                link.href === `#${activeId}` ? "text-foreground" : "text-foreground/60"
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        <div className="flex-1">
+          <nav className="hidden md:flex items-center justify-center gap-8 text-sm">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "transition-colors hover:text-foreground/80",
+                  link.href === `#${activeId}` ? "text-foreground font-medium" : "text-foreground/60"
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
         
         <div className="flex items-center justify-end space-x-2">
-          <div className="hidden items-center justify-end space-x-2 md:flex">
+          <div className="hidden md:flex">
               <ThemeToggle />
           </div>
           <div className="md:hidden">
@@ -70,7 +72,7 @@ export function Header() {
                               href={link.href}
                               className={cn(
                                 "transition-colors hover:text-foreground/80 text-lg",
-                                link.href === `#${activeId}` ? "text-foreground" : "text-foreground/60"
+                                link.href === `#${activeId}` ? "text-foreground font-semibold" : "text-foreground/60"
                               )}
                           >
                               {link.label}

@@ -1,16 +1,47 @@
 
 'use client';
+import { useEffect } from 'react';
 import { HeroSection } from "@/components/hero-section";
 import { AboutSection } from "@/components/about-section";
 import { PortfolioSection } from "@/components/portfolio-section";
 import { ResumeSection } from "@/components/resume-section";
 import { SocialsSection } from "@/components/socials-section";
-import { useScrollSpy } from "@/hooks/use-scroll-spy";
+import { useActiveSectionContext } from '@/contexts/active-section-context';
 
 const sections = ["hero", "about", "portfolio", "resume", "socials"];
 
 export default function HomePage() {
-  useScrollSpy(sections);
+  const { setActiveId } = useActiveSectionContext();
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveId(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: '-20% 0px -80% 0px' }
+    );
+
+    sections.forEach((id) => {
+      const element = document.getElementById(id);
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    return () => {
+      sections.forEach((id) => {
+        const element = document.getElementById(id);
+        if (element) {
+          observer.unobserve(element);
+        }
+      });
+    };
+  }, [setActiveId]);
+
 
   return (
     <>

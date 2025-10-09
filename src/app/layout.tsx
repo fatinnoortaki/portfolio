@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
@@ -5,6 +6,7 @@ import './globals.css';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { portfolioData } from '@/lib/data';
+import { ActiveSectionContextProvider } from '@/contexts/active-section-context';
 
 export const metadata: Metadata = {
   title: portfolioData.name,
@@ -28,12 +30,14 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <ThemeProvider defaultTheme="system">
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-          <Toaster />
+            <ActiveSectionContextProvider>
+              <div className="flex min-h-screen flex-col">
+                <Header />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+              <Toaster />
+            </ActiveSectionContextProvider>
         </ThemeProvider>
       </body>
     </html>
