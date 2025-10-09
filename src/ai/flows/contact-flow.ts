@@ -1,7 +1,7 @@
 
 'use server';
 /**
- * @fileOverview A flow for sending a contact message via email.
+ * @fileOverview A flow for sending a contact message via email using nodemailer.
  */
 
 import { ai } from '@/ai/genkit';
@@ -34,15 +34,15 @@ export const sendContactEmailFlow = ai.defineFlow(
       port: Number(process.env.EMAIL_SERVER_PORT),
       secure: Number(process.env.EMAIL_SERVER_PORT) === 465, // true for 465, false for other ports
       auth: {
-        user: process.env.EMAIL_SERVER_USER,
+        user: process.env.SMTP_USERNAME, // Use the specific SMTP username
         pass: process.env.EMAIL_SERVER_PASS,
       },
     });
 
     // Set up email data
     const mailOptions = {
-      from: `"${portfolioData.name} Portfolio" <${process.env.EMAIL_SERVER_USER}>`, // sender address
-      to: process.env.EMAIL_TO, // list of receivers
+      from: `"${portfolioData.name}" <${process.env.EMAIL_FROM}>`, // The "From" address (verified with MailerSend)
+      to: process.env.EMAIL_TO, // The address to receive the notification
       subject: `New Contact Form Message from ${name}`, // Subject line
       text: message, // plain text body
       html: `
@@ -53,7 +53,7 @@ export const sendContactEmailFlow = ai.defineFlow(
         <p><strong>Message:</strong></p>
         <p>${message.replace(/\n/g, '<br>')}</p>
       `,
-      replyTo: email,
+      replyTo: email, // Set the sender's email as the reply-to address
     };
 
     try {
