@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { MouseEvent } from 'react';
@@ -38,11 +37,9 @@ export function HeroSection() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Button asChild size="lg">
-                <Link href="#socials">
+              <Button size="lg" onClick={(e) => handleScroll(e, '#socials')}>
                   Get in Touch
                   <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
               </Button>
                <Button size="lg" variant="outline" onClick={(e) => handleScroll(e, '#portfolio')}>
                   View My Work
