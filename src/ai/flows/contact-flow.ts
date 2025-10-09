@@ -7,7 +7,6 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import * as nodemailer from 'nodemailer';
-import { portfolioData } from '@/lib/data';
 
 const ContactMessageSchema = z.object({
   name: z.string().describe('The name of the person sending the message.'),
@@ -26,7 +25,7 @@ export const sendContactEmailFlow = ai.defineFlow(
   },
   async (messageData) => {
     const { name, email, message } = messageData;
-    const emailServerPort = Number(process.env.EMAIL_SERVER_PORT);
+    const emailServerPort = Number(process.env.EMAIL_SERVER_PORT || 587);
 
     // Create a transporter object using SMTP transport.
     // The credentials and server info are pulled from environment variables.
@@ -36,13 +35,13 @@ export const sendContactEmailFlow = ai.defineFlow(
       secure: emailServerPort === 465, // `secure:true` for port 465, `secure:false` for all other ports
       auth: {
         user: process.env.SMTP_USERNAME, // The username for SMTP authentication (e.g., from MailerSend)
-        pass: process.env.EMAIL_SERVER_PASS, // The password for SMTP authentication
+        pass: process.env.EMAIL_SERVER_PASS, // The password or API token for SMTP authentication
       },
     });
 
     // Set up email data
     const mailOptions = {
-      from: `"${portfolioData.name}" <${process.env.EMAIL_FROM}>`, // The "From" address (verified with your email service)
+      from: `"${name}" <${process.env.EMAIL_FROM}>`, // The "From" address (verified with your email service)
       to: process.env.EMAIL_TO, // The address to receive the notification
       subject: `New Contact Form Message from ${name}`, // Subject line
       text: message, // plain text body
@@ -62,11 +61,19 @@ export const sendContactEmailFlow = ai.defineFlow(
       const info = await transporter.sendMail(mailOptions);
       console.log('Message sent: %s', info.messageId);
       return `Message sent successfully to ${process.env.EMAIL_TO}.`;
-    } catch (error) {
-      console.error('Error sending email:', error);
-      // Throwing an error will cause the calling action to fail,
-      // which is what we want to show an error message to the user.
-      throw new Error('Failed to send email. Check server logs for details.');
+    } catch (error: any) {
+      // Log the full error for better debugging
+      console.error('Failed to send email. Full error: ', error);
+      
+      // Provide a more specific error message back to the action
+      let errorMessage = 'Failed to send email. Please check the server logs for more details.';
+      if (error.code === 'EAUTH') {
+        errorMessage = 'Authentication error. Please check your SMTP username and password in the .env file.';
+      } else if (error.responseCode === 535) {
+        errorMessage = 'Authentication failed (Error 535). This could be a wrong password or an unverified "From" email address.';
+      }
+      
+      throw new Error(errorMessage);
     }
   }
 );
