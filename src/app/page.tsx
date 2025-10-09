@@ -10,15 +10,15 @@ import { useScrollSpy } from "@/hooks/use-scroll-spy";
 const sections = ["hero", "about", "portfolio", "resume", "socials"];
 
 export default function HomePage() {
-  const { activeId, refs } = useScrollSpy(sections);
+  useScrollSpy(sections);
 
   return (
     <>
-      <div ref={refs.hero}><HeroSection /></div>
-      <div ref={refs.about}><AboutSection /></div>
-      <div ref={refs.portfolio}><PortfolioSection /></div>
-      <div ref={refs.resume}><ResumeSection /></div>
-      <div ref={refs.socials}><SocialsSection /></div>
+      <div id="hero"><HeroSection /></div>
+      <div id="about"><AboutSection /></div>
+      <div id="portfolio"><PortfolioSection /></div>
+      <div id="resume"><ResumeSection /></div>
+      <div id="socials"><SocialsSection /></div>
     </>
   );
 }
