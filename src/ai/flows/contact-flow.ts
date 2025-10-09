@@ -26,13 +26,14 @@ export const sendContactEmailFlow = ai.defineFlow(
   },
   async (messageData) => {
     const { name, email, message } = messageData;
+    const emailServerPort = Number(process.env.EMAIL_SERVER_PORT);
 
     // Create a transporter object using SMTP transport.
     // The credentials and server info are pulled from environment variables.
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_SERVER_HOST,
-      port: Number(process.env.EMAIL_SERVER_PORT),
-      secure: Number(process.env.EMAIL_SERVER_PORT) === 465, // Enforce secure connection for port 465
+      port: emailServerPort,
+      secure: emailServerPort === 465, // `secure:true` for port 465, `secure:false` for all other ports
       auth: {
         user: process.env.SMTP_USERNAME, // The username for SMTP authentication (e.g., from MailerSend)
         pass: process.env.EMAIL_SERVER_PASS, // The password for SMTP authentication
@@ -65,7 +66,7 @@ export const sendContactEmailFlow = ai.defineFlow(
       console.error('Error sending email:', error);
       // Throwing an error will cause the calling action to fail,
       // which is what we want to show an error message to the user.
-      throw new Error('Failed to send email.');
+      throw new Error('Failed to send email. Check server logs for details.');
     }
   }
 );
