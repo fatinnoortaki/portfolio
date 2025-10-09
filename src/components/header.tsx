@@ -18,15 +18,15 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
-        <div className="mr-auto flex items-center md:mr-6">
+        <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2">
             <Image src={portfolioData.logo} alt="Logo" width={24} height={24} className="h-6 w-6" />
             <span className="hidden font-bold sm:inline-block font-headline">{portfolioData.name}</span>
           </Link>
         </div>
 
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <nav className="hidden md:flex items-center gap-6 text-sm">
+        <div className="flex-1">
+          <nav className="hidden md:flex items-center justify-center gap-6 text-sm">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
