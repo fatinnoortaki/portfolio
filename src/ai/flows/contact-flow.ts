@@ -34,14 +34,14 @@ export const sendContactEmailFlow = ai.defineFlow(
       port: Number(process.env.EMAIL_SERVER_PORT),
       secure: Number(process.env.EMAIL_SERVER_PORT) === 465, // true for 465, false for other ports
       auth: {
-        user: process.env.SMTP_USERNAME, // Use the specific SMTP username
-        pass: process.env.EMAIL_SERVER_PASS,
+        user: process.env.SMTP_USERNAME, // The username for SMTP authentication (e.g., from MailerSend)
+        pass: process.env.EMAIL_SERVER_PASS, // The password for SMTP authentication
       },
     });
 
     // Set up email data
     const mailOptions = {
-      from: `"${portfolioData.name}" <${process.env.EMAIL_FROM}>`, // The "From" address (verified with MailerSend)
+      from: `"${portfolioData.name}" <${process.env.EMAIL_FROM}>`, // The "From" address (verified with your email service)
       to: process.env.EMAIL_TO, // The address to receive the notification
       subject: `New Contact Form Message from ${name}`, // Subject line
       text: message, // plain text body
