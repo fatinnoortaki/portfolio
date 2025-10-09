@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -67,9 +68,9 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-image: linear-gradient(to top, hsl(145 50% 90%), hsl(145 40% 98%));
+    background-image: radial-gradient(ellipse at center, hsl(145 50% 92%), hsl(145 40% 98%));
   }
   .dark body {
-    background-image: linear-gradient(to bottom, hsl(275 15% 8%), hsl(145 20% 12%));
+    background-image: radial-gradient(ellipse at center, hsl(145 20% 12%), hsl(275 15% 8%));
   }
 }
