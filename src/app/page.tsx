@@ -6,9 +6,10 @@ import { AboutSection } from "@/components/about-section";
 import { PortfolioSection } from "@/components/portfolio-section";
 import { ResumeSection } from "@/components/resume-section";
 import { SocialsSection } from "@/components/socials-section";
+import { ContactSection } from "@/components/contact-section";
 import { useActiveSectionContext } from '@/contexts/active-section-context';
 
-const sections = ["hero", "about", "portfolio", "resume", "socials"];
+const sections = ["hero", "about", "portfolio", "resume", "socials", "contact"];
 
 export default function HomePage() {
   const { setActiveId } = useActiveSectionContext();
@@ -50,6 +51,7 @@ export default function HomePage() {
       <div id="portfolio"><PortfolioSection /></div>
       <div id="resume"><ResumeSection /></div>
       <div id="socials"><SocialsSection /></div>
+      <div id="contact"><ContactSection /></div>
     </>
   );
 }

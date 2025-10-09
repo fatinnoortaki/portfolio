@@ -18,6 +18,7 @@ const navLinks = [
   { href: '#portfolio', label: 'Portfolio' },
   { href: '#resume', label: 'Resume' },
   { href: '#socials', label: 'Connect' },
+  { href: '#contact', label: 'Contact' },
 ];
 
 export function Header() {
