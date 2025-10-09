@@ -25,21 +25,19 @@ export function Header() {
           </Link>
         </div>
 
-        <div className="flex-1">
-          <nav className="hidden md:flex items-center justify-center gap-6 text-sm">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="transition-colors hover:text-foreground/80 text-foreground/60"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
+        <nav className="hidden flex-1 md:flex items-center justify-center gap-6 text-sm">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="transition-colors hover:text-foreground/80 text-foreground/60"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
         
-        <div className="flex items-center justify-end md:hidden">
+        <div className="flex flex-1 items-center justify-end md:hidden">
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="ghost" size="icon">
@@ -47,12 +45,11 @@ export function Header() {
                         <span className="sr-only">Toggle Menu</span>
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="pr-0">
-                    <SheetHeader className="p-6">
+                <SheetContent side="right" className="pr-0 flex flex-col">
+                    <SheetHeader className="p-6 pb-0">
                         <SheetTitle className="sr-only">Mobile Navigation</SheetTitle>
                     </SheetHeader>
-                    <div className="my-4 h-px w-full bg-border" />
-                    <div className="flex flex-col gap-4 p-6">
+                    <div className="flex flex-col gap-4 p-6 flex-1">
                     {navLinks.map((link) => (
                         <Link
                             key={link.href}
@@ -62,6 +59,10 @@ export function Header() {
                             {link.label}
                         </Link>
                         ))}
+                    </div>
+                    <div className="my-4 h-px w-full bg-border" />
+                    <div className="p-6 pt-0">
+                        <ThemeToggle />
                     </div>
                 </SheetContent>
             </Sheet>
