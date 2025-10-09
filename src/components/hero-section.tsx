@@ -1,3 +1,7 @@
+
+'use client';
+
+import type { MouseEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -11,6 +15,14 @@ import { QuoteSection } from './quote-section';
 
 export function HeroSection() {
   const featuredProjects = portfolioData.projects.filter(p => p.featured);
+
+  const handleScroll = (e: MouseEvent<HTMLButtonElement>, href: string) => {
+    e.preventDefault();
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <section id="hero" className="w-full border-b flex items-center min-h-screen py-20 md:py-24 lg:py-32">
@@ -32,10 +44,8 @@ export function HeroSection() {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-               <Button asChild size="lg" variant="outline">
-                <Link href="#portfolio">
+               <Button size="lg" variant="outline" onClick={(e) => handleScroll(e, '#portfolio')}>
                   View My Work
-                </Link>
               </Button>
             </div>
           </div>
@@ -46,7 +56,7 @@ export function HeroSection() {
             <h3 className="text-2xl font-bold tracking-tight text-center mb-6 font-headline">Featured Projects</h3>
             <div className="grid gap-6 md:grid-cols-2">
               {featuredProjects.map((project: Project) => (
-                <Card key={project.id} className="group overflow-hidden">
+                <Card key={project.id} className="group overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
                   <Link href={project.liveUrl || '#'} target="_blank" rel="noopener noreferrer">
                     <div className="relative h-48">
                        <Image
