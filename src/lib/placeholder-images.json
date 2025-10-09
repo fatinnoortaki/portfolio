@@ -21,38 +21,38 @@
     {
       "id": "project1",
       "description": "Portfolio project 1",
-      "imageUrl": "https://images.unsplash.com/photo-1542379361-1e4381273952?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjcm9wJTIweWllbGR8ZW58MHx8fHwxNzI5MDI4MjE0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://picsum.photos/seed/project1/600/400",
       "imageHint": "crop yield"
     },
     {
       "id": "project2",
       "description": "Portfolio project 2",
-      "imageUrl": "https://images.unsplash.com/photo-1624555130222-a169e3834346?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWFydCUyMGlyaWdhdGlvbnxlbnwwfHx8fDE3MjkwMjgyMzR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://picsum.photos/seed/project2/600/400",
       "imageHint": "smart irrigation"
     },
     {
       "id": "project3",
       "description": "Portfolio project 3",
-      "imageUrl": "https://images.unsplash.com/photo-1615828247383-a75b48108c4a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwbGFudCUyMGRpc2Vhc2V8ZW58MHx8fHwxNzI5MDI4MjU4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://picsum.photos/seed/project3/600/400",
       "imageHint": "plant disease"
     },
     {
       "id": "project4",
       "description": "Portfolio project 4",
-      "imageUrl": "https://images.unsplash.com/photo-1591135364402-534720073e04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmYXJtZXJzJTIwbWFya2V0fGVufDB8fHx8MTcyOTAyODMwMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://picsum.photos/seed/project4/600/400",
       "imageHint": "farmers market"
     },
     {
       "id": "project5",
       "description": "Portfolio project 5",
-      "imageUrl": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx0ZWFtJTIwY29sbGFib3JhdGlvbnxlbnwwfHx8fDE3NTkzNTQ5ODl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "team collaboration"
+      "imageUrl": "https://picsum.photos/seed/project5/600/400",
+      "imageHint": "agriculture drone"
     },
     {
       "id": "project6",
       "description": "Portfolio project 6",
-      "imageUrl": "https://images.unsplash.com/photo-1629058546243-4269cf2a29cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjbG91ZCUyMGluZnJhc3RydWN0dXJlfGVufDB8fHx8MTc1OTM5ODg4M3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "cloud infrastructure"
+      "imageUrl": "https://picsum.photos/seed/project6/600/400",
+      "imageHint": "blockchain supply chain"
     }
   ]
 }

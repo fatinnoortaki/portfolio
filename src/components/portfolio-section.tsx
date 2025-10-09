@@ -25,14 +25,15 @@ export function PortfolioSection() {
           {projects.map((project: Project) => (
             <Card key={project.id} className="flex flex-col overflow-hidden">
               <CardHeader className="p-0">
-                <Image
-                  src={project.imageUrl}
-                  alt={project.title}
-                  width={600}
-                  height={400}
-                  className="w-full h-48 object-cover"
-                  data-ai-hint={project.imageHint}
-                />
+                <div className="relative h-48 w-full">
+                  <Image
+                    src={project.imageUrl}
+                    alt={project.title}
+                    fill
+                    className="object-cover"
+                    data-ai-hint={project.imageHint}
+                  />
+                </div>
               </CardHeader>
               <CardContent className="p-6 flex-1">
                 <CardTitle className="font-headline text-xl mb-2">{project.title}</CardTitle>

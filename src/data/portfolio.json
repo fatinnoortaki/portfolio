@@ -38,7 +38,7 @@
       "title": "Crop Yield Prediction",
       "description": "A machine learning model to predict crop yields based on weather patterns and soil data.",
       "techStack": ["Python", "TensorFlow", "Scikit-learn"],
-      "imageUrl": "https://www.labellerr.com/blog/content/images/2024/11/ml-crop-yield-prediction-tutorial.webp",
+      "imageUrl": "https://picsum.photos/seed/project1/600/400",
       "imageHint": "crop yield",
       "liveUrl": "#",
       "repoUrl": "#",
@@ -49,7 +49,7 @@
       "title": "Smart Irrigation System",
       "description": "An IoT-based system that automates irrigation based on real-time soil moisture levels.",
       "techStack": ["Arduino", "React", "Firebase"],
-      "imageUrl": "https://docs.arduino.cc/static/dd8cdd43964127eb5aceddfa5ef25578/a6d36/dashboard-cel.png",
+      "imageUrl": "https://picsum.photos/seed/project2/600/400",
       "imageHint": "smart irrigation",
       "liveUrl": "#",
       "repoUrl": "#",
@@ -60,7 +60,7 @@
       "title": "Plant Disease Identifier",
       "description": "A mobile app that uses computer vision to identify plant diseases from photos.",
       "techStack": ["Flutter", "TensorFlow Lite", "Firebase"],
-      "imageUrl": "https://pub.mdpi-res.com/agriculture/agriculture-12-02014/article_deploy/html/images/agriculture-12-02014-g001.png",
+      "imageUrl": "https://picsum.photos/seed/project3/600/400",
       "imageHint": "plant disease",
       "liveUrl": "#",
       "repoUrl": "#"
@@ -70,8 +70,28 @@
       "title": "Farm-to-Table Marketplace",
       "description": "An e-commerce platform connecting local farmers directly with consumers.",
       "techStack": ["Next.js", "Stripe", "PostgreSQL"],
-      "imageUrl": "https://images.squarespace-cdn.com/content/v1/62e7a92f066fa3730dcd4604/4e7e9112-a354-42a2-945a-db64c5ecc77e/v2-8wigr-mxmgp.jpg",
+      "imageUrl": "https://picsum.photos/seed/project4/600/400",
       "imageHint": "farmers market",
+      "liveUrl": "#",
+      "repoUrl": "#"
+    },
+    {
+      "id": "5",
+      "title": "Automated Drone Scouting",
+      "description": "Drones autonomously scout fields, identifying pests or nutrient deficiencies using image analysis.",
+      "techStack": ["Python", "OpenCV", "PyTorch"],
+      "imageUrl": "https://picsum.photos/seed/project5/600/400",
+      "imageHint": "agriculture drone",
+      "liveUrl": "#",
+      "repoUrl": "#"
+    },
+    {
+      "id": "6",
+      "title": "Supply Chain Management dApp",
+      "description": "A blockchain-based application for transparently tracking produce from farm to consumer.",
+      "techStack": ["Solidity", "Hardhat", "Next.js"],
+      "imageUrl": "https://picsum.photos/seed/project6/600/400",
+      "imageHint": "blockchain supply chain",
       "liveUrl": "#",
       "repoUrl": "#"
     }
