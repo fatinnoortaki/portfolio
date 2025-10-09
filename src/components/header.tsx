@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from './ui/button';
@@ -5,6 +7,9 @@ import { ThemeToggle } from './theme-toggle';
 import { portfolioData } from '@/lib/data';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
+import { useScrollSpy } from '@/hooks/use-scroll-spy';
+import { cn } from '@/lib/utils';
+
 
 const navLinks = [
   { href: '#hero', label: 'Home' },
@@ -14,11 +19,16 @@ const navLinks = [
   { href: '#socials', label: 'Connect' },
 ];
 
+const sectionIds = navLinks.map(link => link.href.substring(1));
+
+
 export function Header() {
+  const { activeId } = useScrollSpy(sectionIds);
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
-        <div className="flex items-center mr-auto">
+        <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2">
             <Image src={portfolioData.logo} alt="Logo" width={24} height={24} className="h-6 w-6" />
             <span className="font-bold font-headline">{portfolioData.name}</span>
@@ -30,14 +40,17 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
+              className={cn(
+                "transition-colors hover:text-foreground/80",
+                link.href === `#${activeId}` ? "text-foreground" : "text-foreground/60"
+              )}
             >
               {link.label}
             </Link>
           ))}
         </nav>
         
-        <div className="flex items-center justify-end ml-auto">
+        <div className="flex items-center justify-end space-x-2">
             <div className="md:hidden">
                 <Sheet>
                     <SheetTrigger asChild>
