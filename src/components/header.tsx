@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useActiveSectionContext } from '@/contexts/active-section-context';
+import type { MouseEvent } from 'react';
 
 const navLinks = [
   { href: '#hero', label: 'Home' },
@@ -21,6 +22,14 @@ const navLinks = [
 
 export function Header() {
   const { activeId } = useActiveSectionContext();
+
+  const handleScroll = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -38,6 +47,7 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
+                onClick={(e) => handleScroll(e, link.href)}
                 className={cn(
                   "transition-colors hover:text-foreground/80",
                   link.href === `#${activeId}` ? "text-foreground font-medium" : "text-foreground/60"
@@ -70,6 +80,7 @@ export function Header() {
                           <Link
                               key={link.href}
                               href={link.href}
+                              onClick={(e) => handleScroll(e, link.href)}
                               className={cn(
                                 "transition-colors hover:text-foreground/80 text-lg",
                                 link.href === `#${activeId}` ? "text-foreground font-semibold" : "text-foreground/60"
