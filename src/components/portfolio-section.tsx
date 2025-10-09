@@ -1,3 +1,7 @@
+
+'use client';
+
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { portfolioData } from '@/lib/data';
@@ -6,9 +10,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ExternalLink, Github } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function PortfolioSection() {
   const { projects } = portfolioData;
+
+  // Create a unique list of all tech stacks for filter buttons
+  const allTechs = Array.from(new Set(projects.flatMap(p => p.techStack)));
+  const [activeFilter, setActiveFilter] = useState<string>('All');
+
+  const filteredProjects = activeFilter === 'All'
+    ? projects
+    : projects.filter(p => p.techStack.includes(activeFilter));
 
   return (
     <section id="portfolio" className="w-full py-12 md:py-24 lg:py-32">
@@ -21,9 +34,28 @@ export function PortfolioSection() {
             </p>
           </div>
         </div>
+        
+        <div className="flex justify-center flex-wrap gap-2 mt-8 mb-12">
+            <Button
+                variant={activeFilter === 'All' ? 'default' : 'outline'}
+                onClick={() => setActiveFilter('All')}
+            >
+                All
+            </Button>
+            {allTechs.map(tech => (
+                <Button
+                    key={tech}
+                    variant={activeFilter === tech ? 'default' : 'outline'}
+                    onClick={() => setActiveFilter(tech)}
+                >
+                    {tech}
+                </Button>
+            ))}
+        </div>
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-12">
-          {projects.map((project: Project) => (
-            <Card key={project.id} className="flex flex-col overflow-hidden">
+          {filteredProjects.map((project: Project) => (
+            <Card key={project.id} className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
               <CardHeader className="p-0">
                 <div className="relative h-48 w-full">
                   <Image
@@ -40,7 +72,7 @@ export function PortfolioSection() {
                 <CardDescription className="mb-4">{project.description}</CardDescription>
                 <div className="flex flex-wrap gap-2">
                   {project.techStack.map((tech) => (
-                    <Badge key={tech} variant="secondary" className="font-normal">{tech}</Badge>
+                    <Badge key={tech} variant="secondary" className={cn("font-normal", activeFilter === tech && "bg-primary/20 text-primary-foreground")}>{tech}</Badge>
                   ))}
                 </div>
               </CardContent>
