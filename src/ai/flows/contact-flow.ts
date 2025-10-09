@@ -1,13 +1,12 @@
 
 'use server';
 /**
- * @fileOverview A flow for saving a contact message to Firestore.
+ * @fileOverview A flow for saving a contact message.
+ * Note: The Firestore database integration is temporarily removed to resolve a build issue.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { firebase, getFirebaseApp } from '@genkit-ai/google-genai/firebase';
-import { getFirestore } from 'firebase-admin/firestore';
 
 const ContactMessageSchema = z.object({
   name: z.string().describe('The name of the person sending the message.'),
@@ -17,7 +16,7 @@ const ContactMessageSchema = z.object({
 
 type ContactMessage = z.infer<typeof ContactMessageSchema>;
 
-// This flow saves the contact message to a Firestore collection.
+// This flow temporarily returns a success message without saving to a database.
 export const saveContactMessageFlow = ai.defineFlow(
   {
     name: 'saveContactMessageFlow',
@@ -25,19 +24,12 @@ export const saveContactMessageFlow = ai.defineFlow(
     outputSchema: z.string(),
   },
   async (messageData) => {
-    // This flow is configured to use Firebase.
-    // Before running this flow, you must configure Firebase by running:
-    // `genkit firebase:config`
-    await firebase.assertConfig();
+    // In a real app, you would save this data to a database.
+    // The original implementation used Firestore, but has been temporarily
+    // disabled due to a persistent build error with the Genkit Firebase plugin.
+    console.log('Received contact message:', messageData);
 
-    const db = getFirestore(getFirebaseApp());
-    const collection = db.collection('contact-messages');
-    const doc = await collection.add({
-      ...messageData,
-      sentAt: new Date().toISOString(),
-    });
-
-    return `Message saved with ID: ${doc.id}`;
+    return `Message from ${messageData.name} received.`;
   }
 );
 
