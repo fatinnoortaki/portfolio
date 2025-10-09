@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Button } from './ui/button';
 import { ThemeToggle } from './theme-toggle';
 import { portfolioData } from '@/lib/data';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 
 const navLinks = [
@@ -18,14 +18,14 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
-        <div className="mr-6 flex items-center">
+        <div className="mr-auto flex items-center md:mr-6">
           <Link href="/" className="flex items-center space-x-2">
             <Image src={portfolioData.logo} alt="Logo" width={24} height={24} className="h-6 w-6" />
             <span className="hidden font-bold sm:inline-block font-headline">{portfolioData.name}</span>
           </Link>
         </div>
 
-        <div className="flex flex-1 items-center justify-center">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <nav className="hidden md:flex items-center gap-6 text-sm">
             {navLinks.map((link) => (
               <Link
@@ -48,12 +48,11 @@ export function Header() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="pr-0">
-                    <Link href="/" className="mr-6 flex items-center space-x-2">
-                        <Image src={portfolioData.logo} alt="Logo" width={24} height={24} className="h-6 w-6" />
-                        <span className="font-bold sm:inline-block font-headline">{portfolioData.name}</span>
-                    </Link>
+                    <SheetHeader className="p-6">
+                        <SheetTitle className="sr-only">Mobile Navigation</SheetTitle>
+                    </SheetHeader>
                     <div className="my-4 h-px w-full bg-border" />
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-4 p-6">
                     {navLinks.map((link) => (
                         <Link
                             key={link.href}
@@ -68,7 +67,7 @@ export function Header() {
             </Sheet>
         </div>
 
-        <div className="hidden md:flex items-center justify-end space-x-2">
+        <div className="hidden items-center justify-end space-x-2 md:flex">
           <ThemeToggle />
         </div>
       </div>
