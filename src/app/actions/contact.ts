@@ -20,12 +20,11 @@ export async function sendContactMessage(
   const { name, email, message } = validatedFields.data;
 
   try {
-    // In a real app, you might send an email here.
-    // For this example, we'll save it to the database.
+    // This now calls the flow that sends an email.
     await saveContactMessage({ name, email, message });
     return { message: 'Message sent successfully!' };
   } catch (error) {
     console.error('Error sending message:', error);
-    return { message: 'Database Error: Failed to Send Message.' };
+    return { message: 'Error: Failed to Send Message.' };
   }
 }

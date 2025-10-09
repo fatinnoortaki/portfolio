@@ -1,12 +1,13 @@
 
 'use server';
 /**
- * @fileOverview A flow for saving a contact message.
- * Note: The Firestore database integration is temporarily removed to resolve a build issue.
+ * @fileOverview A flow for sending a contact message via email.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import * as nodemailer from 'nodemailer';
+import { portfolioData } from '@/lib/data';
 
 const ContactMessageSchema = z.object({
   name: z.string().describe('The name of the person sending the message.'),
@@ -16,20 +17,56 @@ const ContactMessageSchema = z.object({
 
 type ContactMessage = z.infer<typeof ContactMessageSchema>;
 
-// This flow temporarily returns a success message without saving to a database.
-export const saveContactMessageFlow = ai.defineFlow(
+// This flow sends an email with the contact form data.
+export const sendContactEmailFlow = ai.defineFlow(
   {
-    name: 'saveContactMessageFlow',
+    name: 'sendContactEmailFlow',
     inputSchema: ContactMessageSchema,
     outputSchema: z.string(),
   },
   async (messageData) => {
-    // In a real app, you would save this data to a database.
-    // The original implementation used Firestore, but has been temporarily
-    // disabled due to a persistent build error with the Genkit Firebase plugin.
-    console.log('Received contact message:', messageData);
+    const { name, email, message } = messageData;
 
-    return `Message from ${messageData.name} received.`;
+    // Create a transporter object using SMTP transport.
+    // The credentials and server info are pulled from environment variables.
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_SERVER_HOST,
+      port: Number(process.env.EMAIL_SERVER_PORT),
+      secure: Number(process.env.EMAIL_SERVER_PORT) === 465, // true for 465, false for other ports
+      auth: {
+        user: process.env.EMAIL_SERVER_USER,
+        pass: process.env.EMAIL_SERVER_PASS,
+      },
+    });
+
+    // Set up email data
+    const mailOptions = {
+      from: `"${portfolioData.name} Portfolio" <${process.env.EMAIL_SERVER_USER}>`, // sender address
+      to: process.env.EMAIL_TO, // list of receivers
+      subject: `New Contact Form Message from ${name}`, // Subject line
+      text: message, // plain text body
+      html: `
+        <h1>New Message from your Portfolio Contact Form</h1>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <hr>
+        <p><strong>Message:</strong></p>
+        <p>${message.replace(/\n/g, '<br>')}</p>
+      `,
+      replyTo: email,
+    };
+
+    try {
+      // Send mail with defined transport object
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Message sent: %s', info.messageId);
+      return `Message sent successfully to ${process.env.EMAIL_TO}.`;
+    } catch (error) {
+      console.error('Error sending email:', error);
+      // Throwing an error will cause the calling action to fail,
+      // which is what we want to show an error message to the user.
+      throw new Error('Failed to send email.');
+    }
   }
 );
 
@@ -37,5 +74,5 @@ export const saveContactMessageFlow = ai.defineFlow(
 export async function saveContactMessage(
   input: ContactMessage
 ): Promise<string> {
-  return await saveContactMessageFlow(input);
+  return await sendContactEmailFlow(input);
 }
