@@ -9,15 +9,19 @@ export function QuoteSection() {
   const [quote, setQuote] = useState<Quote | null>(null);
 
   useEffect(() => {
-    // Select a random quote on component mount
+    // This code now runs only on the client, after the initial render.
+    // This prevents a mismatch between server and client rendered HTML.
     const randomIndex = Math.floor(Math.random() * portfolioData.quotes.length);
     setQuote(portfolioData.quotes[randomIndex]);
-  }, []);
+  }, []); // The empty dependency array ensures this runs only once on mount.
 
+  // Render a placeholder or nothing on the server and initial client render
   if (!quote) {
-    return null; // Don't render anything until a quote is selected
+    // You can return a loading skeleton here if you prefer
+    return <div className="w-full max-w-2xl mx-auto my-8 h-[124px]" />;
   }
 
+  // Once the component has mounted on the client, render the quote
   return (
     <div className="w-full max-w-2xl mx-auto my-8">
         <blockquote className="relative p-4 text-lg italic border-l-4 bg-muted text-center rounded-r-lg">
