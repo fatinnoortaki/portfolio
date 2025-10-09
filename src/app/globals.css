@@ -67,8 +67,9 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground animate-gradient-flow;
     background-image: radial-gradient(ellipse at center, hsl(145 50% 92%), hsl(145 40% 98%));
+    background-size: 400% 400%;
   }
   .dark body {
     background-image: radial-gradient(ellipse at center, hsl(145 20% 12%), hsl(275 15% 8%));
