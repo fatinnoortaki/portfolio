@@ -32,7 +32,7 @@ export const sendContactEmailFlow = ai.defineFlow(
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_SERVER_HOST,
       port: Number(process.env.EMAIL_SERVER_PORT),
-      secure: Number(process.env.EMAIL_SERVER_PORT) === 465, // true for 465, false for other ports
+      secure: Number(process.env.EMAIL_SERVER_PORT) === 465, // Enforce secure connection for port 465
       auth: {
         user: process.env.SMTP_USERNAME, // The username for SMTP authentication (e.g., from MailerSend)
         pass: process.env.EMAIL_SERVER_PASS, // The password for SMTP authentication
