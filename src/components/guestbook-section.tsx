@@ -160,7 +160,6 @@ export function GuestbookSection() {
     const sendMessage = async () => {
         if (!firestore || !user || !newMessage.trim() || !authorName) return;
 
-        document.body.classList.add('is-loading');
         try {
             await addDoc(collection(firestore, 'guestbook'), {
                 message: newMessage,
@@ -174,8 +173,6 @@ export function GuestbookSection() {
             inputRef.current?.focus();
         } catch (error) {
             console.error("Error sending message: ", error);
-        } finally {
-            document.body.classList.remove('is-loading');
         }
     }
 
