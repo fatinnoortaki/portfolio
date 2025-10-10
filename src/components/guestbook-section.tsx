@@ -1,7 +1,7 @@
 
 'use client';
 
-import { addDoc, collection, limit, onSnapshot, orderBy, query, serverTimestamp, where, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import { useAuth, useFirestore, useUser } from '@/firebase';
 import { useEffect, useState, useRef } from 'react';
 import { Button } from './ui/button';
@@ -110,11 +110,8 @@ export function GuestbookSection() {
     useEffect(() => {
         if (!firestore) return;
 
-        const oneHourAgo = Timestamp.fromMillis(Date.now() - 60 * 60 * 1000);
-
         const q = query(
             collection(firestore, 'guestbook'),
-            where('createdAt', '>', oneHourAgo),
             orderBy('createdAt', 'asc'), 
             limit(100)
         );
@@ -173,7 +170,7 @@ export function GuestbookSection() {
                     <div className="space-y-2">
                         <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Guestbook</h2>
                         <p className="max-w-[900px] text-foreground/80 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                            Leave a message for me and for future visitors! Messages are only shown for one hour.
+                            Leave a message for me and for future visitors!
                         </p>
                     </div>
                 </div>
