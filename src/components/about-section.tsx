@@ -5,6 +5,7 @@ import type { FunFact } from '@/lib/definitions';
 import { Card, CardContent } from '@/components/ui/card';
 import { Microscope, Leaf, Bot, BarChart } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const iconMap: { [key: string]: LucideIcon } = {
   "🔬": Microscope,
@@ -26,8 +27,10 @@ export function AboutSection() {
               alt="Profile Photo"
               width={320}
               height={320}
-              className="rounded-full object-cover border-4 border-background shadow-lg h-64 w-64 md:h-80 md:w-80"
+              className="rounded-full object-cover border-4 border-background shadow-lg h-64 w-64 md:h-80 md:w-80 select-none"
               data-ai-hint={profilePhotoHint}
+              draggable="false"
+              onContextMenu={(e) => e.preventDefault()}
             />
           </div>
           <div className="space-y-8">
