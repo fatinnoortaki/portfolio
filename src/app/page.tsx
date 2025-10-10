@@ -20,10 +20,11 @@ export default function HomePage() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setActiveId(entry.target.id);
+            entry.target.classList.add('section-visible');
           }
         });
       },
-      { rootMargin: '-20% 0px -80% 0px' }
+      { rootMargin: '-20% 0px -20% 0px' }
     );
 
     sections.forEach((id) => {

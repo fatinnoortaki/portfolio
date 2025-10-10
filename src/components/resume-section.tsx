@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { portfolioData } from '@/lib/data';
 import type { Experience, Education } from '@/lib/definitions';
@@ -9,7 +10,7 @@ export function ResumeSection() {
   const { experiences, educations, cvUrl } = portfolioData;
 
   return (
-    <section id="resume" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
+    <section id="resume" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40 section-hidden">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
