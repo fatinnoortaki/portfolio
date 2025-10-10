@@ -17,8 +17,13 @@ export function Preloader({ isLoading }: PreloaderProps) {
         isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none'
       )}
     >
-      <div className="animate-pulse">
-        <Image src={portfolioData.logo} alt="Logo" width={48} height={48} className="h-12 w-12" />
+      <div className="flex flex-col items-center gap-4">
+        <div className="animate-pulse">
+          <Image src={portfolioData.logo} alt="Logo" width={48} height={48} className="h-12 w-12" />
+        </div>
+        <div className="w-32 h-1.5 bg-muted rounded-full overflow-hidden">
+            <div className="w-full h-full bg-primary animate-loading-bar rounded-full"></div>
+        </div>
       </div>
     </div>
   );
