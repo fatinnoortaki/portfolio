@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { Skeleton } from './ui/skeleton';
 
 type GuestbookMessage = {
     id: string;
@@ -21,6 +22,18 @@ type GuestbookMessage = {
     createdAt: Date;
     photoURL: string | null;
 };
+
+function MessageSkeleton() {
+    return (
+        <div className="flex items-start gap-4">
+            <Skeleton className="h-8 w-8 rounded-full" />
+            <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-48" />
+            </div>
+        </div>
+    )
+}
 
 function Message({ msg }: { msg: GuestbookMessage }) {
     const formattedDate = msg.createdAt ? formatDistanceToNow(msg.createdAt, { addSuffix: true }) : 'just now';
@@ -90,6 +103,7 @@ export function GuestbookSection() {
     const auth = useAuth();
     const { data: user } = useUser();
     const [messages, setMessages] = useState<GuestbookMessage[]>([]);
+    const [loading, setLoading] = useState(true);
     const [newMessage, setNewMessage] = useState('');
     const [authorName, setAuthorName] = useState<string | null>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -111,6 +125,7 @@ export function GuestbookSection() {
 
     useEffect(() => {
         if (!firestore) return;
+        setLoading(true);
 
         const q = query(
             collection(firestore, 'guestbook'),
@@ -130,6 +145,7 @@ export function GuestbookSection() {
                 };
             }).reverse(); // Reverse to show newest messages at the bottom
             setMessages(newMessages);
+            setLoading(false);
         });
 
         return () => unsubscribe();
@@ -139,7 +155,7 @@ export function GuestbookSection() {
         if (scrollContainerRef.current) {
             scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
         }
-    }, [messages]);
+    }, [messages, loading]);
 
 
     const sendMessage = async () => {
@@ -194,9 +210,17 @@ export function GuestbookSection() {
                         </CardHeader>
                         <CardContent>
                             <div ref={scrollContainerRef} className="h-80 overflow-y-auto space-y-6 p-4 border rounded-md custom-scrollbar">
-                                {messages.map((msg) => (
-                                    <Message key={msg.id} msg={msg} />
-                                ))}
+                                {loading ? (
+                                    <>
+                                        <MessageSkeleton />
+                                        <MessageSkeleton />
+                                        <MessageSkeleton />
+                                    </>
+                                ) : (
+                                    messages.map((msg) => (
+                                        <Message key={msg.id} msg={msg} />
+                                    ))
+                                )}
                             </div>
                             <div className="mt-6">
                                 {isChatReady ? (
