@@ -91,7 +91,7 @@ export function GuestbookSection() {
     const [messages, setMessages] = useState<GuestbookMessage[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [authorName, setAuthorName] = useState<string | null>(null);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
 
@@ -135,7 +135,9 @@ export function GuestbookSection() {
     }, [firestore]);
     
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+        }
     }, [messages]);
 
 
@@ -190,11 +192,10 @@ export function GuestbookSection() {
                             <CardDescription>Messages will appear here as they are sent.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="h-80 overflow-y-auto space-y-6 p-4 border rounded-md">
+                            <div ref={scrollContainerRef} className="h-80 overflow-y-auto space-y-6 p-4 border rounded-md">
                                 {messages.map((msg) => (
                                     <Message key={msg.id} msg={msg} />
                                 ))}
-                                <div ref={messagesEndRef} />
                             </div>
                             <div className="mt-6">
                                 {isChatReady ? (
