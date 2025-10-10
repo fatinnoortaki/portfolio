@@ -21,7 +21,7 @@ export function ResumeSection() {
   const { experiences, educations, cvUrl } = portfolioData;
   const isMobile = useIsMobile();
 
-  const cvEmbedUrl = cvUrl.replace('/view?usp=sharing', '/preview');
+  const cvEmbedUrl = `${cvUrl.replace('/view?usp=sharing', '/preview')}#view=fit`;
 
   return (
     <section id="resume" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
