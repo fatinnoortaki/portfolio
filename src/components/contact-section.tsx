@@ -47,9 +47,10 @@ export function ContactSection() {
 
         const templateParams = {
           from_name: values.name,
-          to_name: portfolioData.name,
           user_name: values.name,
+          to_name: portfolioData.name,
           user_email: values.email,
+          reply_to: values.email,
           message: values.message,
         };
 
