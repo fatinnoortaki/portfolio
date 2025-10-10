@@ -92,6 +92,7 @@ export function GuestbookSection() {
     const [newMessage, setNewMessage] = useState('');
     const [authorName, setAuthorName] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
 
     useEffect(() => {
@@ -150,10 +151,12 @@ export function GuestbookSection() {
         });
 
         setNewMessage('');
+        inputRef.current?.focus();
     }
 
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        e.stopPropagation();
         sendMessage();
     };
 
@@ -197,13 +200,14 @@ export function GuestbookSection() {
                                 {isChatReady ? (
                                     <form onSubmit={handleFormSubmit} className="flex items-center gap-2">
                                         <Input
+                                            ref={inputRef}
                                             type="text"
                                             value={newMessage}
                                             onChange={(e) => setNewMessage(e.target.value)}
                                             placeholder="Write a message..."
                                             maxLength={280}
                                         />
-                                        <Button type="button" size="icon" disabled={!newMessage.trim()} onClick={sendMessage}>
+                                        <Button type="submit" size="icon" disabled={!newMessage.trim()}>
                                             <Send className="h-4 w-4" />
                                             <span className="sr-only">Send</span>
                                         </Button>
