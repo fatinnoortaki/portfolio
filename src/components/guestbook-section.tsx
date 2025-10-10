@@ -1,4 +1,3 @@
-
 'use client';
 
 import { addDoc, collection, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
@@ -166,7 +165,7 @@ export function GuestbookSection() {
                     <div className="space-y-2">
                         <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Guestbook</h2>
                         <p className="max-w-[900px] text-foreground/80 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                            Leave a message for me and for future visitors!
+                            Leave a message for me and for future visitors! Messages are deleted after one hour.
                         </p>
                     </div>
                 </div>
