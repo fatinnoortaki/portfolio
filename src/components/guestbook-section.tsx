@@ -112,7 +112,7 @@ export function GuestbookSection() {
 
         const q = query(
             collection(firestore, 'guestbook'),
-            orderBy('createdAt', 'asc'), 
+            orderBy('createdAt', 'desc'), 
             limit(100)
         );
 
@@ -126,7 +126,7 @@ export function GuestbookSection() {
                     createdAt: data.createdAt?.toDate(),
                     photoURL: data.photoURL || null,
                 };
-            });
+            }).reverse(); // Reverse to show newest messages at the bottom
             setMessages(newMessages);
         });
 
@@ -138,8 +138,7 @@ export function GuestbookSection() {
     }, [messages]);
 
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const sendMessage = async () => {
         if (!firestore || !user || !newMessage.trim() || !authorName) return;
 
         await addDoc(collection(firestore, 'guestbook'), {
@@ -151,7 +150,13 @@ export function GuestbookSection() {
         });
 
         setNewMessage('');
+    }
+
+    const handleFormSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        sendMessage();
     };
+
 
     const handleSignOut = () => {
         if (auth) {
@@ -190,7 +195,7 @@ export function GuestbookSection() {
                             </div>
                             <div className="mt-6">
                                 {isChatReady ? (
-                                    <form onSubmit={handleSubmit} className="flex items-center gap-2">
+                                    <form onSubmit={handleFormSubmit} className="flex items-center gap-2">
                                         <Input
                                             type="text"
                                             value={newMessage}
@@ -198,7 +203,7 @@ export function GuestbookSection() {
                                             placeholder="Write a message..."
                                             maxLength={280}
                                         />
-                                        <Button type="submit" size="icon" disabled={!newMessage.trim()}>
+                                        <Button type="button" size="icon" disabled={!newMessage.trim()} onClick={sendMessage}>
                                             <Send className="h-4 w-4" />
                                             <span className="sr-only">Send</span>
                                         </Button>
