@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,10 +15,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { contactSchema, type ContactFormState } from '@/lib/definitions';
-import { sendContactMessage } from '@/app/actions/contact';
+import { contactSchema } from '@/lib/definitions';
 import { useTransition } from 'react';
 import { Loader2 } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 export function ContactSection() {
   const { toast } = useToast();
@@ -37,19 +35,35 @@ export function ContactSection() {
 
   async function onSubmit(values: z.infer<typeof contactSchema>) {
     startTransition(async () => {
-      const result: ContactFormState = await sendContactMessage(values);
-      if (result.errors) {
-        toast({
-          variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
-          description: 'There was a problem with your request. Please try again.',
-        });
-      } else {
+      try {
+        const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+        const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+        const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+        if (!serviceId || !templateId || !publicKey) {
+          throw new Error('EmailJS environment variables are not configured.');
+        }
+
+        const templateParams = {
+          from_name: values.name,
+          from_email: values.email,
+          message: values.message,
+        };
+
+        await emailjs.send(serviceId, templateId, templateParams, publicKey);
+
         toast({
           title: 'Message Sent!',
           description: "Thanks for reaching out. I'll get back to you soon.",
         });
         form.reset();
+      } catch (error) {
+        console.error('EmailJS Error:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong.',
+          description: 'There was a problem sending your message. Please try again.',
+        });
       }
     });
   }
