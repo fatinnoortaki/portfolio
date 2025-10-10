@@ -72,4 +72,11 @@
     background-image: url('/media/background.png');
     background-repeat: repeat;
   }
+  .dark body {
+    background-image: url('/media/background.png');
+    background-repeat: repeat;
+    filter: invert(1);
+    background-color: hsl(var(--background));
+    background-blend-mode: overlay;
+  }
 }
