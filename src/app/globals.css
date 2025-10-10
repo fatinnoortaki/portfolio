@@ -68,4 +68,8 @@
   body {
     @apply bg-background text-foreground;
   }
+  .light body {
+    background-image: url('/media/background.png');
+    background-repeat: repeat;
+  }
 }
