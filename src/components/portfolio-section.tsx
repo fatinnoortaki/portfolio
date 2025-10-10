@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { portfolioData } from '@/lib/data';
@@ -9,19 +9,36 @@ import type { Project } from '@/lib/definitions';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ExternalLink, Github } from 'lucide-react';
+import { ExternalLink, Github, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
+
+const PROJECTS_TO_SHOW_MOBILE = 3;
 
 export function PortfolioSection() {
   const { projects } = portfolioData;
+  const isMobile = useIsMobile();
 
   // Create a unique list of all tech stacks for filter buttons
   const allTechs = Array.from(new Set(projects.flatMap(p => p.techStack)));
   const [activeFilter, setActiveFilter] = useState<string>('All');
+  const [showAllProjects, setShowAllProjects] = useState(false);
+  
+  useEffect(() => {
+    // Reset the "showAll" state when the filter changes
+    setShowAllProjects(false);
+  }, [activeFilter]);
 
-  const filteredProjects = activeFilter === 'All'
+  const projectsForFilter = activeFilter === 'All'
     ? projects
     : projects.filter(p => p.techStack.includes(activeFilter));
+
+  const filteredProjects = (isMobile && activeFilter === 'All' && !showAllProjects)
+    ? projectsForFilter.slice(0, PROJECTS_TO_SHOW_MOBILE)
+    : projectsForFilter;
+
+  const showSeeMoreButton = isMobile && activeFilter === 'All' && !showAllProjects && projects.length > PROJECTS_TO_SHOW_MOBILE;
+
 
   return (
     <section id="portfolio" className="w-full py-12 md:py-24 lg:py-32">
@@ -95,6 +112,15 @@ export function PortfolioSection() {
             </Card>
           ))}
         </div>
+
+        {showSeeMoreButton && (
+          <div className="mt-12 flex justify-center">
+            <Button variant="outline" onClick={() => setShowAllProjects(true)}>
+              See More
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );
