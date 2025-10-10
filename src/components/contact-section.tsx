@@ -36,18 +36,11 @@ export function ContactSection() {
   });
 
   async function onSubmit(values: z.infer<typeof contactSchema>) {
+    document.body.classList.add('is-loading');
     startTransition(async () => {
       const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
       const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
       const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
-
-      // Debugging: Log variables to the browser console
-      console.log('--- EmailJS Debug ---');
-      console.log('Service ID:', serviceId);
-      console.log('Template ID:', templateId);
-      console.log('Public Key:', publicKey ? 'Loaded' : 'Not Loaded');
-      console.log('---------------------');
-
 
       if (!serviceId || !templateId || !publicKey) {
         console.error('EmailJS environment variables are not configured correctly.');
@@ -56,6 +49,7 @@ export function ContactSection() {
           title: 'Configuration Error',
           description: 'The email service is not set up correctly. Please contact the site owner.',
         });
+        document.body.classList.remove('is-loading');
         return;
       }
 
@@ -83,6 +77,8 @@ export function ContactSection() {
           title: 'Uh oh! Something went wrong.',
           description: 'There was a problem sending your message. Please try again.',
         });
+      } finally {
+        document.body.classList.remove('is-loading');
       }
     });
   }
