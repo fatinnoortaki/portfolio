@@ -87,7 +87,7 @@
   }
 
   .is-loading * {
-    cursor: url('/media/Cursor/Nature Busy.ani'), wait !important;
+    cursor: url('/media/Cursor/Nature Busy.cur'), wait !important;
   }
 }
 
