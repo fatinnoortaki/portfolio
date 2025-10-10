@@ -20,7 +20,6 @@ export default function HomePage() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setActiveId(entry.target.id);
-            entry.target.classList.add('section-visible');
           }
         });
       },
