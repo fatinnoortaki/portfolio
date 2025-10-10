@@ -1,3 +1,4 @@
+
 'use client';
 
 import { addDoc, collection, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
@@ -40,29 +41,44 @@ function Message({ msg }: { msg: GuestbookMessage }) {
     )
 }
 
-function SignIn() {
+function NameInputForm({ onNameSet }: { onNameSet: (name: string) => void }) {
     const auth = useAuth();
-    const handleSignIn = () => {
-        if (auth) {
-            signInAnonymously(auth).catch((error) => {
-                console.error("Anonymous sign-in failed", error);
-            });
+    const [name, setName] = useState('');
+
+    const handleJoin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!name.trim() || !auth) return;
+
+        try {
+            await signInAnonymously(auth);
+            localStorage.setItem('guestbook_author', name);
+            onNameSet(name);
+        } catch (error) {
+            console.error("Anonymous sign-in failed", error);
         }
     };
+
     return (
-        <div className="flex flex-col items-center justify-center gap-4 text-center">
-            <p className="text-foreground/80">Sign in to leave a message.</p>
-            <Button onClick={handleSignIn}>Sign In Anonymously</Button>
-        </div>
+        <form onSubmit={handleJoin} className="flex flex-col items-center justify-center gap-4 text-center">
+            <p className="text-foreground/80">Enter your name to join the chat.</p>
+            <Input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your Name..."
+                maxLength={50}
+                className="max-w-xs"
+            />
+            <Button type="submit" disabled={!name.trim()}>Join Chat</Button>
+        </form>
     );
 }
 
-function SignOut({ user }: { user: User }) {
-    const auth = useAuth();
+function UserDisplay({ author, onSignOut }: { author: string, onSignOut: () => void }) {
     return (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>Signed in as {user.isAnonymous ? 'Anonymous' : user.displayName}</span>
-            <Button variant="link" className="p-0 h-auto" onClick={() => auth?.signOut()}>Sign Out</Button>
+            <span>Signed in as <span className="font-semibold text-foreground">{author}</span></span>
+            <Button variant="link" className="p-0 h-auto" onClick={onSignOut}>Sign Out</Button>
         </div>
     );
 }
@@ -70,10 +86,25 @@ function SignOut({ user }: { user: User }) {
 
 export function GuestbookSection() {
     const firestore = useFirestore();
+    const auth = useAuth();
     const { data: user } = useUser();
     const [messages, setMessages] = useState<GuestbookMessage[]>([]);
     const [newMessage, setNewMessage] = useState('');
+    const [authorName, setAuthorName] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+
+    useEffect(() => {
+        if (user) {
+            const storedName = localStorage.getItem('guestbook_author');
+            if (storedName) {
+                setAuthorName(storedName);
+            }
+        } else {
+            setAuthorName(null);
+            localStorage.removeItem('guestbook_author');
+        }
+    }, [user]);
 
 
     useEffect(() => {
@@ -105,11 +136,11 @@ export function GuestbookSection() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!firestore || !user || !newMessage.trim()) return;
+        if (!firestore || !user || !newMessage.trim() || !authorName) return;
 
         await addDoc(collection(firestore, 'guestbook'), {
             message: newMessage,
-            author: user.isAnonymous ? 'Anonymous' : user.displayName || 'Anonymous',
+            author: authorName,
             photoURL: user.photoURL,
             createdAt: serverTimestamp(),
             uid: user.uid,
@@ -117,6 +148,16 @@ export function GuestbookSection() {
 
         setNewMessage('');
     };
+
+    const handleSignOut = () => {
+        if (auth) {
+            auth.signOut();
+        }
+        localStorage.removeItem('guestbook_author');
+        setAuthorName(null);
+    }
+
+    const isChatReady = user && authorName;
 
     return (
         <section id="guestbook" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
@@ -144,7 +185,7 @@ export function GuestbookSection() {
                                 <div ref={messagesEndRef} />
                             </div>
                             <div className="mt-6">
-                                {user ? (
+                                {isChatReady ? (
                                     <form onSubmit={handleSubmit} className="flex items-center gap-2">
                                         <Input
                                             type="text"
@@ -159,13 +200,13 @@ export function GuestbookSection() {
                                         </Button>
                                     </form>
                                 ) : (
-                                    <SignIn />
+                                    <NameInputForm onNameSet={setAuthorName} />
                                 )}
                             </div>
                         </CardContent>
-                        {user && 
+                        {isChatReady && 
                             <div className="p-6 pt-0 flex justify-end">
-                                <SignOut user={user} />
+                                <UserDisplay author={authorName} onSignOut={handleSignOut} />
                             </div>
                         }
                     </Card>

@@ -12,7 +12,7 @@
         },
         "author": {
           "type": "string",
-          "description": "The name of the person who left the message (or 'Anonymous')."
+          "description": "The name of the person who left the message."
         },
         "createdAt": {
           "type": "string",
