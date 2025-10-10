@@ -20,8 +20,11 @@ function initializeFirebase() {
   }
 
   const firebaseConfig = getFirebaseConfig();
+  
+  // If config is not found, return undefined for all services
   if (!firebaseConfig) {
-    throw new Error('Firebase config not found');
+    console.error("Firebase config not found, Firebase will not be initialized.");
+    return { firebaseApp: undefined, auth: undefined, firestore: undefined };
   }
 
   if (getApps().length === 0) {
@@ -30,6 +33,7 @@ function initializeFirebase() {
     firestore = getFirestore(firebaseApp);
 
     if (process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR) {
+        console.log("Connecting to Firebase Emulators");
         connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
         connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
     }
