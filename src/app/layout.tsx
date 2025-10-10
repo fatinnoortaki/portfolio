@@ -7,6 +7,7 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { portfolioData } from '@/lib/data';
 import { ActiveSectionContextProvider } from '@/contexts/active-section-context';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
   title: portfolioData.name,
@@ -30,6 +31,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <ThemeProvider defaultTheme="system">
+          <FirebaseClientProvider>
             <ActiveSectionContextProvider>
               <div className="flex min-h-screen flex-col">
                 <Header />
@@ -38,6 +40,7 @@ export default function RootLayout({
               </div>
               <Toaster />
             </ActiveSectionContextProvider>
+          </FirebaseClientProvider>
         </ThemeProvider>
       </body>
     </html>

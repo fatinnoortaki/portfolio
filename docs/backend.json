@@ -1,0 +1,37 @@
+
+{
+  "entities": {
+    "GuestbookMessage": {
+      "title": "Guestbook Message",
+      "description": "A message left by a visitor in the guestbook.",
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "The content of the message."
+        },
+        "author": {
+          "type": "string",
+          "description": "The name of the person who left the message (or 'Anonymous')."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the message was created."
+        }
+      },
+      "required": ["message", "author", "createdAt"]
+    }
+  },
+  "auth": {
+    "providers": ["anonymous"]
+  },
+  "firestore": {
+    "/guestbook": {
+      "schema": {
+        "$ref": "#/entities/GuestbookMessage"
+      },
+      "description": "Collection of messages for the public guestbook."
+    }
+  }
+}

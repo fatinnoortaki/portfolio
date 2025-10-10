@@ -1,0 +1,22 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // GUESTBOOK
+    match /guestbook/{messageId} {
+      // Anyone can read the messages
+      allow read;
+
+      // Only authenticated users can create messages
+      // They can only create messages for themselves (matching their UID)
+      // The message content must be a string and less than 280 characters
+      allow create: if request.auth != null
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() < 280
+                    && request.resource.data.author is string;
+    }
+
+  }
+}
