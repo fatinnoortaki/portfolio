@@ -28,12 +28,7 @@ export function HeroSection() {
   return (
     <section 
       id="hero" 
-      className={cn(
-        "w-full border-b flex items-center min-h-screen py-20 md:py-24 lg:py-32",
-        "bg-gradient-to-br from-background via-primary/10 to-background",
-        "dark:from-background dark:via-primary/20 dark:to-background",
-        "bg-[length:200%_200%] animate-gradient-flow"
-      )}
+      className="w-full border-b flex items-center min-h-screen py-20 md:py-24 lg:py-32"
     >
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center space-y-12">
