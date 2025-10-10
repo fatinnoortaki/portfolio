@@ -49,7 +49,7 @@ export function ResumeSection() {
                   View CV
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0">
+              <DialogContent className="max-w-5xl h-screen flex flex-col p-0">
                 <DialogHeader className="p-4 border-b">
                   <DialogTitle>My Curriculum Vitae</DialogTitle>
                 </DialogHeader>
