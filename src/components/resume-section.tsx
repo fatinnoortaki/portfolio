@@ -50,7 +50,7 @@ export function ResumeSection() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-5xl h-screen flex flex-col p-0">
-                <DialogHeader className="px-4 py-1 border-b">
+                <DialogHeader className="px-4 py-1 border-b space-y-0">
                   <DialogTitle className="text-center">My Curriculum Vitae</DialogTitle>
                 </DialogHeader>
                 <div className="flex-1">
