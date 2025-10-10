@@ -1,13 +1,27 @@
 
+'use client';
+
 import Link from 'next/link';
 import { portfolioData } from '@/lib/data';
 import type { Experience, Education } from '@/lib/definitions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download, Briefcase, GraduationCap } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useIsMobile } from '@/hooks/use-mobile';
+
 
 export function ResumeSection() {
   const { experiences, educations, cvUrl } = portfolioData;
+  const isMobile = useIsMobile();
+
+  const cvEmbedUrl = cvUrl.replace('/view?usp=sharing', '/preview');
 
   return (
     <section id="resume" className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
@@ -19,12 +33,37 @@ export function ResumeSection() {
               A brief overview of my professional and educational background. For more details, feel free to download my CV.
             </p>
           </div>
-          <Button asChild>
-            <Link href={cvUrl} target="_blank">
-              <Download className="mr-2 h-4 w-4" />
-              Download CV
-            </Link>
-          </Button>
+          
+          {isMobile ? (
+             <Button asChild>
+                <Link href={cvUrl} target="_blank">
+                  <Download className="mr-2 h-4 w-4" />
+                  View CV
+                </Link>
+              </Button>
+          ) : (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>
+                  <Download className="mr-2 h-4 w-4" />
+                  View CV
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl h-[90vh] p-0">
+                <DialogHeader className="p-4 border-b">
+                  <DialogTitle>My Curriculum Vitae</DialogTitle>
+                </DialogHeader>
+                <div className="flex-1">
+                  <iframe 
+                    src={cvEmbedUrl}
+                    className="w-full h-full border-0"
+                    allow="autoplay"
+                  ></iframe>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+
         </div>
         <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 mt-12">
           <div className="grid gap-6">
