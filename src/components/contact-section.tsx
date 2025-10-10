@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -36,24 +37,38 @@ export function ContactSection() {
 
   async function onSubmit(values: z.infer<typeof contactSchema>) {
     startTransition(async () => {
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+      const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+      // Debugging: Log variables to the browser console
+      console.log('--- EmailJS Debug ---');
+      console.log('Service ID:', serviceId);
+      console.log('Template ID:', templateId);
+      console.log('Public Key:', publicKey ? 'Loaded' : 'Not Loaded');
+      console.log('---------------------');
+
+
+      if (!serviceId || !templateId || !publicKey) {
+        console.error('EmailJS environment variables are not configured correctly.');
+        toast({
+          variant: 'destructive',
+          title: 'Configuration Error',
+          description: 'The email service is not set up correctly. Please contact the site owner.',
+        });
+        return;
+      }
+
+      const templateParams = {
+        from_name: values.name,
+        user_name: values.name,
+        to_name: portfolioData.name,
+        user_email: values.email,
+        reply_to: values.email,
+        message: values.message,
+      };
+
       try {
-        const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
-        const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
-        const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
-
-        if (!serviceId || !templateId || !publicKey) {
-          throw new Error('EmailJS environment variables are not configured.');
-        }
-
-        const templateParams = {
-          from_name: values.name,
-          user_name: values.name,
-          to_name: portfolioData.name,
-          user_email: values.email,
-          reply_to: values.email,
-          message: values.message,
-        };
-
         await emailjs.send(serviceId, templateId, templateParams, publicKey);
 
         toast({
@@ -62,7 +77,7 @@ export function ContactSection() {
         });
         form.reset();
       } catch (error) {
-        console.error('EmailJS Error:', error);
+        console.error('EmailJS Error:', JSON.stringify(error, null, 2));
         toast({
           variant: 'destructive',
           title: 'Uh oh! Something went wrong.',
