@@ -1,6 +1,6 @@
 import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
-import { getAuth, connectAuthEmulator, type Auth } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator, type Firestore } from 'firebase/firestore';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getFirestore, type Firestore } from 'firebase/firestore';
 
 import { getFirebaseConfig } from './config';
 import { FirebaseProvider, useFirebase, useFirebaseApp, useAuth, useFirestore } from './provider';
@@ -23,7 +23,7 @@ function initializeFirebase() {
   
   // If config is not found, return undefined for all services
   if (!firebaseConfig) {
-    console.error("Firebase config not found, Firebase will not be initialized.");
+    console.warn("Firebase config not found, Firebase will not be initialized.");
     return { firebaseApp: undefined, auth: undefined, firestore: undefined };
   }
 
@@ -31,12 +31,6 @@ function initializeFirebase() {
     firebaseApp = initializeApp(firebaseConfig);
     auth = getAuth(firebaseApp);
     firestore = getFirestore(firebaseApp);
-
-    if (process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR) {
-        console.log("Connecting to Firebase Emulators");
-        connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
-        connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
-    }
   }
 
   return { firebaseApp, auth, firestore };
