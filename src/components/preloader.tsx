@@ -13,8 +13,8 @@ export function Preloader({ isLoading }: PreloaderProps) {
   return (
     <div
       className={cn(
-        'fixed inset-0 z-50 flex items-center justify-center bg-background transition-opacity duration-500',
-        isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        'fixed inset-0 z-50 flex items-center justify-center bg-background duration-500',
+        isLoading ? 'animate-fade-in' : 'animate-slide-out-up pointer-events-none'
       )}
     >
       <div className="flex flex-col items-center gap-4">

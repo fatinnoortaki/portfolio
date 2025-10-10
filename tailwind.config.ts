@@ -103,6 +103,10 @@ export default {
             '0%': { transform: 'translateX(-100%)' },
             '100%': { transform: 'translateX(100%)' },
         },
+        'slide-out-up': {
+          from: { transform: 'translateY(0)', opacity: '1' },
+          to: { transform: 'translateY(-100%)', opacity: '0' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -111,6 +115,7 @@ export default {
         'fade-in': 'fade-in 0.5s ease-in-out',
         'fade-out': 'fade-out 0.5s ease-in-out',
         'loading-bar': 'loading-bar 1.5s ease-in-out infinite',
+        'slide-out-up': 'slide-out-up 0.5s ease-in forwards',
       },
     },
   },
