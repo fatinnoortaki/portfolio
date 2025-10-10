@@ -12,6 +12,7 @@ import type { User } from 'firebase/auth';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 type GuestbookMessage = {
     id: string;
@@ -192,7 +193,7 @@ export function GuestbookSection() {
                             <CardDescription>Messages will appear here as they are sent.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div ref={scrollContainerRef} className="h-80 overflow-y-auto space-y-6 p-4 border rounded-md">
+                            <div ref={scrollContainerRef} className="h-80 overflow-y-auto space-y-6 p-4 border rounded-md custom-scrollbar">
                                 {messages.map((msg) => (
                                     <Message key={msg.id} msg={msg} />
                                 ))}
