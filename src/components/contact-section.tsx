@@ -19,6 +19,7 @@ import { contactSchema } from '@/lib/definitions';
 import { useTransition } from 'react';
 import { Loader2 } from 'lucide-react';
 import emailjs from '@emailjs/browser';
+import { portfolioData } from '@/lib/data';
 
 export function ContactSection() {
   const { toast } = useToast();
@@ -46,7 +47,9 @@ export function ContactSection() {
 
         const templateParams = {
           from_name: values.name,
-          from_email: values.email,
+          to_name: portfolioData.name,
+          user_name: values.name,
+          user_email: values.email,
           message: values.message,
         };
 
