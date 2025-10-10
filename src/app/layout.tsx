@@ -34,7 +34,7 @@ export default function RootLayout({
         "font-body antialiased",
         "bg-gradient-to-br from-background via-primary/5 to-background",
         "dark:from-background dark:via-primary/10 dark:to-background",
-        "bg-[length:200%_200%]",
+        "dark:bg-[length:200%_200%]",
         "dark:animate-gradient-flow"
       )}>
         <ThemeProvider defaultTheme="system">
