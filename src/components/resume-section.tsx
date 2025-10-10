@@ -51,7 +51,7 @@ export function ResumeSection() {
               </DialogTrigger>
               <DialogContent className="max-w-5xl h-screen flex flex-col p-0">
                 <DialogHeader className="px-4 py-1 border-b">
-                  <DialogTitle>My Curriculum Vitae</DialogTitle>
+                  <DialogTitle className="text-center">My Curriculum Vitae</DialogTitle>
                 </DialogHeader>
                 <div className="flex-1">
                   <iframe 
