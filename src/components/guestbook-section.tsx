@@ -1,4 +1,3 @@
-
 'use client';
 
 import { addDoc, collection, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
@@ -63,15 +62,12 @@ function NameInputForm({ onNameSet }: { onNameSet: (name: string) => void }) {
         e.preventDefault();
         if (!name.trim() || !auth) return;
 
-        document.body.classList.add('is-loading');
         try {
             await signInAnonymously(auth);
             localStorage.setItem('guestbook_author', name);
             onNameSet(name);
         } catch (error) {
             console.error("Anonymous sign-in failed", error);
-        } finally {
-            document.body.classList.remove('is-loading');
         }
     };
 
@@ -164,7 +160,6 @@ export function GuestbookSection() {
     const sendMessage = async () => {
         if (!firestore || !user || !newMessage.trim() || !authorName) return;
 
-        document.body.classList.add('is-loading');
         try {
             await addDoc(collection(firestore, 'guestbook'), {
                 message: newMessage,
@@ -178,8 +173,6 @@ export function GuestbookSection() {
             inputRef.current?.focus();
         } catch (error) {
             console.error("Error sending message: ", error);
-        } finally {
-            document.body.classList.remove('is-loading');
         }
     }
 
