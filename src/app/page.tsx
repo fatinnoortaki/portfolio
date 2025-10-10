@@ -10,7 +10,7 @@ import { ContactSection } from "@/components/contact-section";
 import { useActiveSectionContext } from '@/contexts/active-section-context';
 import { GuestbookSection } from '@/components/guestbook-section';
 
-const sections = ["hero", "about", "portfolio", "resume", "socials", "guestbook", "contact"];
+const sections = ["hero", "about", "portfolio", "resume", "guestbook", "socials", "contact"];
 
 export default function HomePage() {
   const { setActiveId } = useActiveSectionContext();
@@ -51,8 +51,8 @@ export default function HomePage() {
       <div id="about"><AboutSection /></div>
       <div id="portfolio"><PortfolioSection /></div>
       <div id="resume"><ResumeSection /></div>
-      <div id="socials"><SocialsSection /></div>
       <div id="guestbook"><GuestbookSection /></div>
+      <div id="socials"><SocialsSection /></div>
       <div id="contact"><ContactSection /></div>
     </>
   );
