@@ -35,6 +35,7 @@ export function ContactSection() {
   });
 
   async function onSubmit(values: z.infer<typeof contactSchema>) {
+    document.body.classList.add('is-loading');
     startTransition(async () => {
       const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
       const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
@@ -47,6 +48,7 @@ export function ContactSection() {
           title: 'Configuration Error',
           description: 'The email service is not set up correctly. Please contact the site owner.',
         });
+        document.body.classList.remove('is-loading');
         return;
       }
 
@@ -74,6 +76,8 @@ export function ContactSection() {
           title: 'Uh oh! Something went wrong.',
           description: 'There was a problem sending your message. Please try again.',
         });
+      } finally {
+        document.body.classList.remove('is-loading');
       }
     });
   }

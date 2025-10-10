@@ -69,9 +69,24 @@
     @apply bg-background text-foreground animate-gradient-flow;
     background-image: radial-gradient(ellipse at center, hsl(145 50% 92%), hsl(145 40% 98%));
     background-size: 400% 400%;
+    cursor: url('/media/Cursor/Nature Arrow.png'), auto;
   }
   .dark body {
     background-image: radial-gradient(ellipse at center, hsl(145 20% 12%), hsl(275 15% 8%));
+  }
+
+  a, button, [role="button"], input[type="submit"], input[type="reset"] {
+    cursor: url('/media/Cursor/Nature Link Select.png'), pointer;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  textarea {
+      cursor: url('/media/Cursor/Nature Text Select.png'), text;
+  }
+
+  .is-loading * {
+      cursor: url('/media/Cursor/Nature Busy.png'), wait;
   }
 }
 
